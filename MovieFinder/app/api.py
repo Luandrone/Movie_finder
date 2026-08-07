@@ -1,5 +1,8 @@
 from config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT
 import requests
+from filme import Filme
+
+
 # irá realizar a busca de um filme
 def buscar_filme(nome_filme):
     """
@@ -18,7 +21,6 @@ def buscar_filme(nome_filme):
         Lista de objetos Filme.
     """
 
-
     parametros = {
         'query': nome_filme,
         'language': 'pt-BR',
@@ -33,10 +35,14 @@ def buscar_filme(nome_filme):
         'Authorization': f'Bearer {API_KEY}',
     }
 
-
-
     response = requests.get(BASE_URL + MOVIE_SEARCH_ENDPOINT, params=parametros, headers=headers)
-    print(response.json())
-buscar_filme('Interestelar')
+    dados = response.json()
+    lista_filmes = []
+    for filme in dados['results']:
+        objeto_filme = Filme(filme['title'], filme['release_date'][:4], filme['vote_average'])
+        lista_filmes.append(objeto_filme)
+        print(objeto_filme)
+    return lista_filmes
 
 
+buscar_filme('batman')
