@@ -1,6 +1,7 @@
+from config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT
+import requests
 # irá realizar a busca de um filme
-def buscar_filme():
-
+def buscar_filme(nome_filme):
     """
     Responsabilidade:
         Pesquisar um filme na API TMDB.
@@ -16,4 +17,26 @@ def buscar_filme():
     :return:
         Lista de objetos Filme.
     """
-    pass
+
+
+    parametros = {
+        'query': nome_filme,
+        'language': 'pt-BR',
+        'region': 'BR',
+        'page': 1,
+        'include_adult': False
+
+    }
+
+    headers = {
+        'accept': 'application/json',
+        'Authorization': f'Bearer {API_KEY}',
+    }
+
+
+
+    response = requests.get(BASE_URL + MOVIE_SEARCH_ENDPOINT, params=parametros, headers=headers)
+    print(response.json())
+buscar_filme('Interestelar')
+
+
