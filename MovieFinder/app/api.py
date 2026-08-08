@@ -1,4 +1,6 @@
-from config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT
+import time
+
+from config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT
 import requests
 from filme import Filme
 
@@ -39,10 +41,38 @@ def buscar_filme(nome_filme):
     dados = response.json()
     lista_filmes = []
     for filme in dados['results']:
-        objeto_filme = Filme(filme['title'], filme['release_date'][:4], filme['vote_average'])
+        objeto_filme = Filme(filme['title'], filme['release_date'][:4], filme['vote_average'], filme['id'])
         lista_filmes.append(objeto_filme)
-        print(objeto_filme)
     return lista_filmes
 
+def buscar_detalhes(filme):
 
-buscar_filme('batman')
+    parametros = {
+        "language": "pt-BR",
+    }
+
+    headers = {
+        'accept': 'application/json',
+        'Authorization': f'Bearer {API_KEY}',
+    }
+
+    response = requests.get(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}', params=parametros, headers=headers)
+    dados = response.json()
+    filme.sinopse = dados['overview']
+    filme.duracao = dados['runtime']
+    filme.poster = dados['poster_path']
+
+    for genero in dados['genres']:
+        filme.generos.append(genero['name'])
+
+
+
+
+lista_de_filmes = buscar_filme('batman')
+
+
+buscar_detalhes(lista_de_filmes[0])
+print(lista_de_filmes[0])
+
+
+
