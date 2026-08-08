@@ -1,8 +1,6 @@
-import time
-
-from config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT
+from app.config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT
 import requests
-from filme import Filme
+from app.filme import Filme
 
 
 # irá realizar a busca de um filme
@@ -65,14 +63,9 @@ def buscar_detalhes(filme):
     for genero in dados['genres']:
         filme.generos.append(genero['name'])
 
+# buscar_detalhes(lista_de_filmes[0])
+# print(lista_de_filmes[0])
 
-
-
-lista_de_filmes = buscar_filme('batman')
-
-
-buscar_detalhes(lista_de_filmes[0])
-print(lista_de_filmes[0])
 
 
 
