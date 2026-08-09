@@ -5,8 +5,21 @@ def mostrar_menu():
     print('1 - Buscar filme')
     print('2 - Sair')
     print('=' * 25)
-    opcao = int(input('Escolha uma opção: '))
-    return opcao
+    while True:
+        try:
+            opcao = int(input('Escolha uma opção: '))
+
+            if opcao in (1, 2):
+                return opcao
+
+            else:
+                print(f'Número {opcao} não é válido')
+
+        except ValueError:
+            print('Valor incorreto!')
+
+
+
 
 def selecionar_filme(lista_de_filmes):
     while True:
@@ -19,5 +32,4 @@ def selecionar_filme(lista_de_filmes):
                 print('Opção invalida! Digite novamente')
         except (ValueError, IndexError):
             print('Opção invalida! Digite novamente')
-
 
