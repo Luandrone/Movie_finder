@@ -1,5 +1,6 @@
 from app.config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT
 import requests
+from app.excecoes import ErroApi
 from app.filme import Filme
 
 
@@ -34,8 +35,13 @@ def buscar_filme(nome_filme):
         'accept': 'application/json',
         'Authorization': f'Bearer {API_KEY}',
     }
-
-    response = requests.get(BASE_URL + MOVIE_SEARCH_ENDPOINT, params=parametros, headers=headers)
+    try:
+        response = requests.get(BASE_URL + MOVIE_SEARCH_ENDPOINT, params=parametros, headers=headers)
+        response.raise_for_status()
+    except requests.exceptions.ConnectionError as erro:
+        raise ErroApi(erro, 'Problema de conexão')
+    except requests.exceptions.HTTPError as erro:
+        raise ErroApi(erro, 'Problema de Http')
     dados = response.json()
     lista_filmes = []
     for filme in dados['results']:
@@ -63,8 +69,7 @@ def buscar_detalhes(filme):
     for genero in dados['genres']:
         filme.generos.append(genero['name'])
 
-# buscar_detalhes(lista_de_filmes[0])
-# print(lista_de_filmes[0])
+
 
 
 
