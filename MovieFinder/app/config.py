@@ -1,5 +1,8 @@
+from os import getenv
+from dotenv import load_dotenv
 BASE_URL = "https://api.themoviedb.org/3/"
-API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MGM1NGYxMDM3MDExNjhjY2I4ZmNhMzRlYjUyMjUwYiIsIm5iZiI6MTc4NjA1MTI1My4yNjksInN1YiI6IjZhNzRmYWI1MjYyZDljNjJiODMzNDkyYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SN8NFr39G-v6NLnT0NoVZkj6miZIzpWFmX7hqgk-EoM"
+load_dotenv()
+API_KEY = getenv("API_KEY")
 MOVIE_SEARCH_ENDPOINT = 'search/movie'
 MOVIE_DETAILS_ENDPOINT = 'movie/'
 MOVIE_PROVIDERS_ENDPOINT ='/watch/providers'
