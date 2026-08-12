@@ -7,6 +7,7 @@ def mostrar_menu():
     print('=' * 25)
     while True:
         try:
+
             opcao = int(input('Escolha uma opção: '))
 
             if opcao in (1, 2):

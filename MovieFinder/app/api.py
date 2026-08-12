@@ -1,8 +1,20 @@
-from app.config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT
+from app import filme
+from app.config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
 from app.filme import Filme
 
+def fazer_requisicao(url=None,params=None,headers=None):
+    try:
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()
+
+    except requests.exceptions.ConnectionError as erro:
+        raise ErroApi(erro, 'Problema de conexão')
+
+    except requests.exceptions.HTTPError as erro:
+        raise ErroApi(erro, 'Problema de Http')
+    return response
 
 # irá realizar a busca de um filme
 def buscar_filme(nome_filme):
@@ -35,22 +47,20 @@ def buscar_filme(nome_filme):
         'accept': 'application/json',
         'Authorization': f'Bearer {API_KEY}',
     }
-    try:
-        response = requests.get(BASE_URL + MOVIE_SEARCH_ENDPOINT, params=parametros, headers=headers)
-        response.raise_for_status()
-    except requests.exceptions.ConnectionError as erro:
-        raise ErroApi(erro, 'Problema de conexão')
-    except requests.exceptions.HTTPError as erro:
-        raise ErroApi(erro, 'Problema de Http')
+
+    response = fazer_requisicao(BASE_URL+MOVIE_SEARCH_ENDPOINT, parametros, headers)
+
     dados = response.json()
     lista_filmes = []
+
     for filme in dados['results']:
+
         objeto_filme = Filme(filme['title'], filme['release_date'][:4], filme['vote_average'], filme['id'])
         lista_filmes.append(objeto_filme)
+
     return lista_filmes
 
 def buscar_detalhes(filme):
-
     parametros = {
         "language": "pt-BR",
     }
@@ -60,7 +70,8 @@ def buscar_detalhes(filme):
         'Authorization': f'Bearer {API_KEY}',
     }
 
-    response = requests.get(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}', params=parametros, headers=headers)
+    response = fazer_requisicao(BASE_URL + MOVIE_DETAILS_ENDPOINT + str(filme.id), parametros, headers)
+
     dados = response.json()
     filme.sinopse = dados['overview']
     filme.duracao = dados['runtime']
@@ -69,8 +80,22 @@ def buscar_detalhes(filme):
     for genero in dados['genres']:
         filme.generos.append(genero['name'])
 
+def buscar_disponibilidade(filme):
 
+    headers = {
+        'accept': 'application/json',
+        'Authorization': f'Bearer {API_KEY}',
+    }
 
+    response = fazer_requisicao(BASE_URL+MOVIE_DETAILS_ENDPOINT+str(filme.id)+MOVIE_PROVIDERS_ENDPOINT,headers=headers)
+
+    dados = response.json()
+    dados_brasil = dados['results'].get('BR')
+
+    if dados_brasil is None:
+        filme.disponibilidade = {}
+    else:
+        filme.disponibilidade = dados_brasil
 
 
 
