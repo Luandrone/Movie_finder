@@ -1,4 +1,4 @@
-from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT, headers
+from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT, headers, MOVIE_DETAILS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
 from app.filme import Filme
@@ -42,7 +42,7 @@ def buscar_filme(nome_filme):
 
     }
 
-    response = fazer_requisicao(BASE_URL+MOVIE_SEARCH_ENDPOINT, headers, parametros)
+    response = fazer_requisicao(f'{BASE_URL}{MOVIE_SEARCH_ENDPOINT}', headers, parametros)
 
     dados = response.json()
     lista_filmes = []
@@ -59,7 +59,7 @@ def buscar_detalhes(filme):
         "language": "pt-BR",
     }
 
-    response = fazer_requisicao(BASE_URL + MOVIE_DETAILS_ENDPOINT + str(filme.id), headers, parametros)
+    response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}', headers, parametros)
 
     dados = response.json()
     filme.sinopse = dados['overview']
@@ -71,7 +71,7 @@ def buscar_detalhes(filme):
 
 def buscar_disponibilidade(filme):
 
-    response = fazer_requisicao(BASE_URL+MOVIE_DETAILS_ENDPOINT+str(filme.id)+MOVIE_PROVIDERS_ENDPOINT, headers)
+    response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}{MOVIE_PROVIDERS_ENDPOINT}',headers)
 
     dados = response.json()
     dados_brasil = dados['results'].get('BR')
