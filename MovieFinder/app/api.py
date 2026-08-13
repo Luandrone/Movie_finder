@@ -1,12 +1,11 @@
-from app import filme
-from app.config import BASE_URL, API_KEY, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT
+from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_DETAILS_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT, headers
 import requests
 from app.excecoes import ErroApi
 from app.filme import Filme
 
-def fazer_requisicao(url=None,params=None,headers=None):
+def fazer_requisicao(url,cabecalho, parametros=None):
     try:
-        response = requests.get(url, params=params, headers=headers)
+        response = requests.get(url, params=parametros, headers=cabecalho)
         response.raise_for_status()
 
     except requests.exceptions.ConnectionError as erro:
@@ -43,12 +42,7 @@ def buscar_filme(nome_filme):
 
     }
 
-    headers = {
-        'accept': 'application/json',
-        'Authorization': f'Bearer {API_KEY}',
-    }
-
-    response = fazer_requisicao(BASE_URL+MOVIE_SEARCH_ENDPOINT, parametros, headers)
+    response = fazer_requisicao(BASE_URL+MOVIE_SEARCH_ENDPOINT, headers, parametros)
 
     dados = response.json()
     lista_filmes = []
@@ -65,12 +59,7 @@ def buscar_detalhes(filme):
         "language": "pt-BR",
     }
 
-    headers = {
-        'accept': 'application/json',
-        'Authorization': f'Bearer {API_KEY}',
-    }
-
-    response = fazer_requisicao(BASE_URL + MOVIE_DETAILS_ENDPOINT + str(filme.id), parametros, headers)
+    response = fazer_requisicao(BASE_URL + MOVIE_DETAILS_ENDPOINT + str(filme.id), headers, parametros)
 
     dados = response.json()
     filme.sinopse = dados['overview']
@@ -82,12 +71,7 @@ def buscar_detalhes(filme):
 
 def buscar_disponibilidade(filme):
 
-    headers = {
-        'accept': 'application/json',
-        'Authorization': f'Bearer {API_KEY}',
-    }
-
-    response = fazer_requisicao(BASE_URL+MOVIE_DETAILS_ENDPOINT+str(filme.id)+MOVIE_PROVIDERS_ENDPOINT,headers=headers)
+    response = fazer_requisicao(BASE_URL+MOVIE_DETAILS_ENDPOINT+str(filme.id)+MOVIE_PROVIDERS_ENDPOINT, headers)
 
     dados = response.json()
     dados_brasil = dados['results'].get('BR')
