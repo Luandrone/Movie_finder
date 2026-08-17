@@ -42,6 +42,9 @@ def buscar_filme(nome_filme):
 
     }
 
+
+
+
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_SEARCH_ENDPOINT}', headers, parametros)
 
     dados = response.json()
