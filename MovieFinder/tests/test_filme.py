@@ -75,3 +75,24 @@ def test_buscar_filme_sem_data(mock_requisicao):
 
     assert primeiro_filme.ano == 'Desconhecido'
 
+@patch('app.api.fazer_requisicao')
+def test_buscar_filme_sem_release_date(mock_requisicao):
+    response_falso = {
+        'results': [
+            {
+                'title': 'batman',
+                'release_date': None,
+                'vote_average': 7.5,
+                'id': 123
+            }
+        ]
+    }
+
+    mock_response = Mock()
+    mock_response.json.return_value = response_falso
+    mock_requisicao.return_value = mock_response
+
+    resultado = buscar_filme('batman')
+    primeiro_filme = resultado[0]
+
+    assert primeiro_filme.ano == 'Desconhecido'

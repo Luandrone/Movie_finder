@@ -33,6 +33,7 @@ def buscar_filme(nome_filme):
         Lista de objetos Filme.
     """
 
+
     parametros = {
         'query': nome_filme,
         'language': 'pt-BR',
@@ -51,8 +52,9 @@ def buscar_filme(nome_filme):
     lista_filmes = []
 
     for filme in dados['results']:
-        if filme['release_date'].strip():
-            ano = filme['release_date'][:4]
+        data = (filme['release_date'] or '').strip()
+        if data:
+            ano = data[:4]
         else:
             ano = 'Desconhecido'
         objeto_filme = Filme(filme['title'], ano, filme['vote_average'], filme['id'])
