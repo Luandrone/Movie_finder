@@ -51,8 +51,11 @@ def buscar_filme(nome_filme):
     lista_filmes = []
 
     for filme in dados['results']:
-
-        objeto_filme = Filme(filme['title'], filme['release_date'][:4], filme['vote_average'], filme['id'])
+        if filme['release_date'].strip():
+            ano = filme['release_date'][:4]
+        else:
+            ano = 'Desconhecido'
+        objeto_filme = Filme(filme['title'], ano, filme['vote_average'], filme['id'])
         lista_filmes.append(objeto_filme)
 
     return lista_filmes

@@ -30,8 +30,6 @@ def test_buscar_filme(mock_requisicao):
             }
         ]
     }
-    mock_response = Mock()
-    mock_response.json.return_value = response_falso
 
     parametros = {
         'query': 'batman',
@@ -42,13 +40,38 @@ def test_buscar_filme(mock_requisicao):
 
     }
 
+    mock_response = Mock()
+    mock_response.json.return_value = response_falso
     mock_requisicao.return_value = mock_response
+
     resultado = buscar_filme('batman')
     primeiro_filme = resultado[0]
+
     assert primeiro_filme.titulo == 'batman'
     assert primeiro_filme.ano == '2021'
     assert primeiro_filme.nota == 7.5
     assert primeiro_filme.id == 123
     mock_requisicao.assert_called_once_with(f'{BASE_URL}{MOVIE_SEARCH_ENDPOINT}', headers, parametros)
 
+@patch('app.api.fazer_requisicao')
+def test_buscar_filme_sem_data(mock_requisicao):
+    response_falso = {
+        'results': [
+            {
+                'title': 'batman',
+                'release_date': '',
+                'vote_average': 7.5,
+                'id': 123
+            }
+        ]
+    }
+
+    mock_response = Mock()
+    mock_response.json.return_value = response_falso
+    mock_requisicao.return_value = mock_response
+
+    resultado = buscar_filme('batman')
+    primeiro_filme = resultado[0]
+
+    assert primeiro_filme.ano == 'Desconhecido'
 
