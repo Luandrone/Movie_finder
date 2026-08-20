@@ -2,6 +2,8 @@ from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
 from app.filme import Filme
+from app.transformador import transformar_filmes
+
 
 def fazer_requisicao(url,cabecalho, parametros=None):
     try:
@@ -33,7 +35,6 @@ def buscar_filme(nome_filme):
         Lista de objetos Filme.
     """
 
-
     parametros = {
         'query': nome_filme,
         'language': 'pt-BR',
@@ -43,22 +44,11 @@ def buscar_filme(nome_filme):
 
     }
 
-
-
-
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_SEARCH_ENDPOINT}', headers, parametros)
 
     dados = response.json()
-    lista_filmes = []
 
-    for filme in dados['results']:
-        data = (filme['release_date'] or '').strip()
-        if data:
-            ano = data[:4]
-        else:
-            ano = 'Desconhecido'
-        objeto_filme = Filme(filme['title'], ano, filme['vote_average'], filme['id'])
-        lista_filmes.append(objeto_filme)
+    lista_filmes = transformar_filmes(dados)
 
     return lista_filmes
 
