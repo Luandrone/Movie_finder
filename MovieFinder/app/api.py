@@ -27,9 +27,10 @@ def buscar_filme(nome_filme):
         Nome do filme informado pelo usuário.
 
     Processamento:
+        Monta os parâmetros da pesquisa.
         Realiza uma requisição HTTP.
-        Recebe o JSON da API.
-        Converte cada resultado em um objeto Filme.
+        Converte a resposta para dados Python.
+        Envia os dados para transformação em objetos Filme.
 
     :return:
         Lista de objetos Filme.
