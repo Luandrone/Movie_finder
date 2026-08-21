@@ -94,4 +94,42 @@ def test_buscar_disponibilidade_sem_brasil(mock_disponibilidade):
 
     assert filme1.disponibilidade == {}
 
+@patch('app.api.fazer_requisicao')
+def test_buscar_detalhes_dados_ausentes(mock_detalhes):
+    dados_falsos = {'overview': None,
+                    'runtime': None,
+                    'poster_path': None,
+                    'genres': []}
+
+    mock_response = Mock()
+    mock_response.json.return_value = dados_falsos
+    mock_detalhes.return_value = mock_response
+
+    filme1 = Filme()
+    buscar_detalhes(filme1)
+
+    assert filme1.sinopse is None
+    assert filme1.duracao is None
+    assert filme1.poster is None
+    assert filme1.generos == []
+
+@patch('app.api.fazer_requisicao')
+def test_buscar_disponibilidade_sem_provedores(mock_disponibilidade):
+    dados_falsos = {
+        'results': {
+            'BR': {
+                'flatrate': [],
+                'rent': [],
+                'buy': []
+            }
+        }
+    }
+    mock_response = Mock()
+    mock_response.json.return_value = dados_falsos
+    mock_disponibilidade.return_value = mock_response
+
+    filme1 = Filme()
+    buscar_disponibilidade(filme1)
+
+    assert filme1.disponibilidade == dados_falsos['results']['BR']
 

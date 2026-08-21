@@ -61,7 +61,12 @@ def buscar_detalhes(filme):
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}', headers, parametros)
 
     dados = response.json()
-    filme.sinopse = dados['overview']
+    sinopse = (dados['overview'] or '').strip()
+    if sinopse:
+        filme.sinopse = sinopse
+    else:
+        filme.sinopse = None
+
     filme.duracao = dados['runtime']
     filme.poster = dados['poster_path']
 
