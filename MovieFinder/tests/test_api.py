@@ -3,6 +3,7 @@ import requests.exceptions
 from unittest.mock import patch, Mock
 
 from app.api import fazer_requisicao, buscar_detalhes, buscar_disponibilidade
+from app.config import MOVIE_DETAILS_ENDPOINT, BASE_URL, headers
 from app.excecoes import ErroApi
 from app.filme import Filme
 
@@ -35,6 +36,7 @@ def test_buscar_detalhes(mock_detalhes):
                     'genres':[
                         {'name': 'Crime'},
                         {'name': 'Thriller'}]}
+
     mock_response = Mock()
     mock_response.json.return_value = dados_falsos
     mock_detalhes.return_value = mock_response
@@ -45,6 +47,14 @@ def test_buscar_detalhes(mock_detalhes):
     assert filme1.duracao == 210
     assert filme1.poster == 'blablabla'
     assert filme1.generos == ['Crime', 'Thriller']
+
+    parametros = {
+        'language': 'pt-BR'
+    }
+
+    url = f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme1.id}'
+
+    mock_detalhes.assert_called_once_with(url,headers,parametros)
 
 @patch('app.api.fazer_requisicao')
 def test_buscar_disponibilidade(mock_disponibilidade):
