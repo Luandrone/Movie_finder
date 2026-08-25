@@ -1,0 +1,22 @@
+import os
+import psycopg
+from dotenv import load_dotenv
+
+load_dotenv()
+host = os.getenv('DB_HOST')
+user = os.getenv('DB_USER')
+name = os.getenv('DB_NAME')
+port = os.getenv('DB_PORT')
+password = os.getenv('DB_PASSWORD')
+conn = psycopg.connect(
+    host = host,
+    port = port,
+    dbname = name,
+    user = user,
+    password = password
+)
+cursor = conn.cursor()
+cursor.execute('SELECT * FROM tblFilmes;')
+resultado = cursor.fetchall()
+
+print(resultado[0])
