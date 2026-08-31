@@ -93,7 +93,6 @@ def test_salvar_filme_atualizar_nota(mock_obter_conexao):
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = linha_do_banco_existente
     resultado = salvar_filme(filme_falso_existente)
-
     assert resultado == {
         'status': 'atualizado',
         'alteracoes':[
@@ -107,8 +106,8 @@ def test_salvar_filme_atualizar_nota(mock_obter_conexao):
 
     assert len(mock_cursor.execute.call_args_list) == 2
     assert mock_cursor.execute.call_args_list[1] == call(
-        'UPDATE tblFilmes SET nota = %s WHERE tmdb_id = %s; ',
-        (8.0, 212)
+        'UPDATE tblFilmes SET nota = %s WHERE tmdb_id = %s;',
+        [8.0, 212]
     )
     mock_obter_conexao.return_value.commit.assert_called_once_with()
 

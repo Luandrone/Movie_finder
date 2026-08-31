@@ -1,5 +1,7 @@
+from app.banco.comparador import comparar_filmes
 from app.banco.conexao import obter_conexao
 from app.banco.mapper import mapear_filme
+from app.filme import Filme
 
 
 def buscar_filmes_banco():
@@ -15,6 +17,7 @@ def buscar_filmes_banco():
         lista_filmes.append(filme)
 
     return lista_filmes
+
 
 def salvar_filme(filme):
     conn = obter_conexao()
@@ -42,30 +45,37 @@ def salvar_filme(filme):
         return {'status': 'novo'}
 
     else:
-        if filme.nota != filme_existente[4]:
-            resultado = {
-                'status': 'atualizado',
-                'alteracoes': [
-                    {
-                        'campo': 'nota',
-                        'anterior': filme_existente[4],
-                        'novo': filme.nota,
-                    }
-                ]
+        filme_banco = mapear_filme(filme_existente)
+        resultado = comparar_filmes(filme, filme_banco)
+        if not resultado:
+            return {'status': 'já_existe'}
 
-            }
-            cursor.execute(
-                'UPDATE tblFilmes '
-                'SET nota = %s '
-                'WHERE tmdb_id = %s; ',
-                (filme.nota, filme.id)
-            )
+        else:
+            campos = []
+            valores = []
 
-            conn.commit()
+            for alteracao in resultado:
+                campos.append(alteracao['campo'])
+                valores.append(alteracao['novo'])
 
-            return resultado
+            set_partes = []
 
-        return {'status': 'já_existe'}
+            for campo in campos:
+                set_partes.append(campo + ' = %s')
+
+            set_clause= ', '.join(set_partes)
+
+            valores.append(filme.id)
+
+            sql_update = 'UPDATE tblFilmes SET ' + set_clause + ' WHERE tmdb_id = %s;'
+            cursor.execute(sql_update, valores)
+
+        conn.commit()
+
+        return {
+            'status': 'atualizado',
+            'alteracoes': resultado
+        }
 
 
 
