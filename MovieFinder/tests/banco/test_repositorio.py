@@ -1,7 +1,11 @@
 from unittest.mock import patch, Mock, call
 from decimal import Decimal
+
+import pytest
+
 from app.banco.repositorio import buscar_filmes_banco, salvar_filme
 from app.filme import Filme
+
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_buscar_filmes_banco(mock_obter_conexao):
@@ -29,6 +33,8 @@ def test_buscar_filmes_banco(mock_obter_conexao):
     assert resultado.duracao == 210
     mock_cursor.fetchall.assert_called_once_with()
     mock_cursor.execute.assert_called_once_with('SELECT * FROM tblFilmes;')
+    mock_obter_conexao.return_value.close.assert_called_once_with()
+
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_buscar_filmes_banco_sem_filmes(mock_obter_conexao):
@@ -39,6 +45,19 @@ def test_buscar_filmes_banco_sem_filmes(mock_obter_conexao):
     resultado = buscar_filmes_banco()
 
     assert resultado == []
+    mock_obter_conexao.return_value.close.assert_called_once_with()
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
+    mock_cursor = Mock()
+    mock_obter_conexao.return_value.cursor.return_value = mock_cursor
+
+    mock_cursor.execute.side_effect = RuntimeError
+
+    with pytest.raises(RuntimeError):
+        buscar_filmes_banco()
+
+    mock_obter_conexao.return_value.close.assert_called_once_with()
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_novo(mock_obter_conexao):
@@ -55,9 +74,12 @@ def test_salvar_filme_novo(mock_obter_conexao):
         (212, 'Batman', 2020, 7.0, '', '')
     )
 
+    mock_obter_conexao.return_value.close.assert_called_once_with()
+
+
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_ja_existente(mock_obter_conexao):
-    filme_falso_existente = Filme('Batman', 2020, 7.0, 212,)
+    filme_falso_existente = Filme('Batman', 2020, 7.0, 212, )
     mock_cursor = Mock()
     linha_do_banco_existente = (
         1,
@@ -75,39 +97,56 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
 
     assert resultado == {'status': 'já_existe'}
     assert len(mock_cursor.execute.call_args_list) == 1
+    mock_obter_conexao.return_value.close.assert_called_once_with()
 
 @patch('app.banco.repositorio.obter_conexao')
-def test_salvar_filme_atualizar_nota(mock_obter_conexao):
-    filme_falso_existente = Filme('Batman', 2020, 8.0, 212,)
-    mock_cursor = Mock()
-    linha_do_banco_existente = (
+def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
+    filme_falso_existente = Filme('The Batman', 2022, 8.0, 212, 'blabla', 176)
+    filme_do_banco_existente = (
         1,
         212,
         'Batman',
         2020,
         7.0,
-        '',
-        ''
+        'blabla',
+        150
     )
+    mock_cursor = Mock()
 
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
-    mock_cursor.fetchone.return_value = linha_do_banco_existente
+    mock_cursor.fetchone.return_value = filme_do_banco_existente
+
     resultado = salvar_filme(filme_falso_existente)
+
     assert resultado == {
         'status': 'atualizado',
-        'alteracoes':[
+        'alteracoes': [
+            {
+                'campo': 'titulo',
+                'anterior': 'Batman',
+                'novo': 'The Batman'
+            },
+            {
+                'campo': 'ano',
+                'anterior': 2020,
+                'novo': 2022
+            },
             {
                 'campo': 'nota',
                 'anterior': 7.0,
                 'novo': 8.0
+            },
+            {
+                'campo': 'duracao',
+                'anterior': 150,
+                'novo': 176
             }
         ]
     }
 
-    assert len(mock_cursor.execute.call_args_list) == 2
     assert mock_cursor.execute.call_args_list[1] == call(
-        'UPDATE tblFilmes SET nota = %s WHERE tmdb_id = %s;',
-        [8.0, 212]
+        'UPDATE tblFilmes SET titulo = %s, ano = %s, nota = %s, duracao = %s WHERE tmdb_id = %s;', ['The Batman', 2022, 8.0, 176, 212]
     )
-    mock_obter_conexao.return_value.commit.assert_called_once_with()
 
+    mock_obter_conexao.return_value.commit.assert_called_once_with()
+    mock_obter_conexao.return_value.close.assert_called_once_with()
