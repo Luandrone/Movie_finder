@@ -1,5 +1,6 @@
 from app.banco.comparador import comparar_filmes
 from app.banco.conexao import obter_conexao
+from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes
 from app.banco.mapper import mapear_filme
 
 
@@ -7,8 +8,7 @@ def buscar_filmes_banco():
     conn = obter_conexao()
     try:
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM tblFilmes;')
-        resultado = cursor.fetchall()
+        resultado = buscar_todos_filmes(cursor)
 
         lista_filmes = []
         for linha in resultado:
@@ -25,57 +25,43 @@ def salvar_filme(filme):
 
     try:
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM tblFilmes WHERE tmdb_id = %s', (filme.id,))
-        filme_existente = cursor.fetchone()
+        filme_existente = buscar_por_tmdb_id(cursor, filme.id)
 
         if filme_existente is None:
-            cursor.execute(
-                'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
-                'VALUES (%s, %s, %s, %s, %s, %s);',
-                (
-                    filme.id,
-                    filme.titulo,
-                    filme.ano,
-                    filme.nota,
-                    filme.sinopse,
-                    filme.duracao
-                )
-            )
+            inserir_filme(cursor, filme)
 
             conn.commit()
 
             return {'status': 'novo'}
 
-        else:
-            filme_banco = mapear_filme(filme_existente)
-            resultado = comparar_filmes(filme, filme_banco)
-            if not resultado:
-                return {'status': 'já_existe'}
+        filme_banco = mapear_filme(filme_existente)
+        resultado = comparar_filmes(filme, filme_banco)
+        if not resultado:
+            return {'status': 'já_existe'}
 
-            campos = []
-            valores = []
+        campos = []
+        valores = []
 
-            for alteracao in resultado:
-                campos.append(alteracao['campo'])
-                valores.append(alteracao['novo'])
+        for alteracao in resultado:
+            campos.append(alteracao['campo'])
+            valores.append(alteracao['novo'])
 
-            set_partes = []
+        partes_set = []
 
-            for campo in campos:
-                set_partes.append(campo + ' = %s')
+        for campo in campos:
+            partes_set.append(campo + ' = %s')
 
-            set_clause = ', '.join(set_partes)
+        campos_atualizacao = ', '.join(partes_set)
 
-            valores.append(filme.id)
+        valores.append(filme.id)
 
-            sql_update = 'UPDATE tblFilmes SET ' + set_clause + ' WHERE tmdb_id = %s;'
-            cursor.execute(sql_update, valores)
+        atualizar_filme(cursor, campos_atualizacao, valores)
 
-            conn.commit()
+        conn.commit()
 
-            return {
-                'status': 'atualizado',
-                'alteracoes': resultado
-            }
+        return {
+            'status': 'atualizado',
+            'alteracoes': resultado
+        }
     finally:
         conn.close()
