@@ -1,7 +1,8 @@
 from decimal import Decimal
 from unittest.mock import Mock, patch
 
-from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes
+from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
+    inserir_disponibilidade, buscar_disponibilidade
 from app.filme import Filme
 from teste_postgres import resultado
 
@@ -85,3 +86,91 @@ def test_atualizar_filme():
     atualizar_filme(mock_cursor, campos_atualizacao, valores)
 
     mock_cursor.execute.assert_called_once_with('UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;', valores)
+
+def test_inserir_disponibilidade():
+    mock_cursor = Mock()
+
+    filme_falso = Filme(
+        'Interstellar',
+        2014,
+        8.6,
+        157336
+    )
+
+    disponibilidade_falsa = {
+        'provider_id': 1899,
+        'provider_name': 'HBO Max',
+        'tipo': 'flatrate',
+        'logo_path': '/logo.jpg',
+        'link': 'https://www.themoviedb.org/movie/157336-interstellar/watch?locale=BR'
+    }
+
+    inserir_disponibilidade(mock_cursor, filme_falso, disponibilidade_falsa)
+
+    mock_cursor.execute.assert_called_once_with(
+        'INSERT INTO tblDisponibilidade (tmdb_id, provider_id, provider_name, tipo, logo_path, link)'
+        'VALUES (%s, %s, %s, %s, %s, %s);',
+        (
+            filme_falso.id,
+            disponibilidade_falsa['provider_id'],
+            disponibilidade_falsa['provider_name'],
+            disponibilidade_falsa['tipo'],
+            disponibilidade_falsa['logo_path'],
+            disponibilidade_falsa['link']
+        )
+    )
+
+def test_buscar_disponibilidade():
+    mock_cursor = Mock()
+
+    resultado_falso = (
+        1,
+        157336,
+        1899,
+        'HBO Max',
+        'flatrate',
+        '/logo.jpg',
+        'https://www.themoviedb.org/...'
+    )
+
+    mock_cursor.fetchone.return_value = resultado_falso
+
+    resultado = buscar_disponibilidade(
+        mock_cursor,
+        157336,
+        1899,
+        'flatrate'
+    )
+
+    assert resultado == resultado_falso
+    mock_cursor.fetchone.assert_called_once_with()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

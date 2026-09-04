@@ -13,3 +13,14 @@ def transformar_filmes(dados):
         lista_filmes.append(objeto_filme)
     return lista_filmes
 
+
+def transformar_disponibilidade(provedor, tipo, link):
+    dados_transformados = {
+        'provider_id': provedor['provider_id'],
+        'provider_name': provedor['provider_name'],
+        'tipo': tipo,
+        'logo_path': provedor['logo_path'],
+        'link': link
+    }
+
+    return dados_transformados

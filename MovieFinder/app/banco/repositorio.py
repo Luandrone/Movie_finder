@@ -39,23 +39,23 @@ def salvar_filme(filme):
         if not resultado:
             return {'status': 'já_existe'}
 
-        campos = []
-        valores = []
+        campos_alterados = []
+        valores_novos = []
 
         for alteracao in resultado:
-            campos.append(alteracao['campo'])
-            valores.append(alteracao['novo'])
+            campos_alterados.append(alteracao['campo'])
+            valores_novos.append(alteracao['novo'])
 
         partes_set = []
 
-        for campo in campos:
+        for campo in campos_alterados:
             partes_set.append(campo + ' = %s')
 
         campos_atualizacao = ', '.join(partes_set)
 
-        valores.append(filme.id)
+        valores_novos.append(filme.id)
 
-        atualizar_filme(cursor, campos_atualizacao, valores)
+        atualizar_filme(cursor, campos_atualizacao, valores_novos)
 
         conn.commit()
 

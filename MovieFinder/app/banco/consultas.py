@@ -1,4 +1,4 @@
-from teste_postgres import cursor
+
 def buscar_todos_filmes(cursor):
     cursor.execute(
         'SELECT * FROM tblFilmes;'
@@ -29,3 +29,49 @@ def inserir_filme(cursor, filme):
 def atualizar_filme(cursor,campos_atualizacao, valores):
     sql_update = 'UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;'
     cursor.execute(sql_update, valores)
+
+def inserir_disponibilidade(cursor, filme, disponibilidade):
+    cursor.execute(
+        'INSERT INTO tblDisponibilidade (tmdb_id, provider_id, provider_name, tipo, logo_path, link)'
+        'VALUES (%s, %s, %s, %s, %s, %s);',
+        (
+            filme.id,
+            disponibilidade['provider_id'],
+            disponibilidade['provider_name'],
+            disponibilidade['tipo'],
+            disponibilidade['logo_path'],
+            disponibilidade['link']
+        )
+    )
+
+def buscar_disponibilidade(cursor, tmdb_id, provider_id, tipo):
+    cursor.execute(
+        'SELECT * FROM tblDisponibilidade WHERE tmdb_id = %s AND provider_id = %s AND tipo = %s;',
+        (tmdb_id, provider_id, tipo)
+    )
+
+    resultado = cursor.fetchone()
+
+    return resultado
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
