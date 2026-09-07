@@ -24,3 +24,15 @@ def transformar_disponibilidade(provedor, tipo, link):
     }
 
     return dados_transformados
+
+def organizar_disponibilidades(dados_brasil):
+    lista_disponibilidades = []
+
+    for tipo in ['buy', 'rent', 'flatrate']:
+        provedores = dados_brasil.get(tipo, [])
+
+        for provedor in provedores:
+            disponibilidade = transformar_disponibilidade(provedor, tipo, dados_brasil.get('link'))
+            lista_disponibilidades.append(disponibilidade)
+
+    return lista_disponibilidades

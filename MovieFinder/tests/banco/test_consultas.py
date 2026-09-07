@@ -1,10 +1,8 @@
 from decimal import Decimal
 from unittest.mock import Mock, patch
-
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
-    inserir_disponibilidade, buscar_disponibilidade
+    inserir_disponibilidade, buscar_disponibilidade, buscar_disponibilidades_filme
 from app.filme import Filme
-from teste_postgres import resultado
 
 def test_buscar_todos_filmes():
     mock_cursor = Mock()
@@ -145,7 +143,38 @@ def test_buscar_disponibilidade():
     assert resultado == resultado_falso
     mock_cursor.fetchone.assert_called_once_with()
 
+def test_buscar_disponibilidades_filme():
+    resultado_falso = [
+        (
+            1,
+            157336,
+            1899,
+            'HBO Max',
+            'flatrate',
+            '/hbo.jpg',
+            'https://teste.com'
+        ),
+        (
+            2,
+            157336,
+            2,
+            'Apple TV Store',
+            'buy',
+            '/apple.jpg',
+            'https://teste.com'
+        )
+    ]
+    mock_cursor = Mock()
 
+    mock_cursor.fetchall.return_value = resultado_falso
+    resultado = buscar_disponibilidades_filme(mock_cursor, 157336)
+
+    assert resultado == resultado_falso
+    mock_cursor.execute.assert_called_once_with(
+        'SELECT * FROM tblDisponibilidade WHERE tmdb_id = %s;',
+        (157336,)
+    )
+    mock_cursor.fetchall.assert_called_once_with()
 
 
 

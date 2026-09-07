@@ -44,3 +44,27 @@ def comparar_filmes(filme, filme_banco):
         )
 
     return alteracoes
+
+def comparar_disponibilidades(disponibilidades_atuais, disponibilidades_salvas):
+    adicionadas = []
+    removidas = []
+    chaves_existentes = []
+
+    for disponibilidade in disponibilidades_salvas:
+        chaves_existentes.append((disponibilidade['provider_id'], disponibilidade['tipo']))
+
+
+    for disponibilidade in disponibilidades_atuais:
+        resultado = (disponibilidade['provider_id'], disponibilidade['tipo'])
+        if resultado not in chaves_existentes:
+            adicionadas.append(disponibilidade)
+
+
+
+
+
+
+
+
+
+

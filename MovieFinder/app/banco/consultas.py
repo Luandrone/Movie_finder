@@ -54,8 +54,13 @@ def buscar_disponibilidade(cursor, tmdb_id, provider_id, tipo):
 
     return resultado
 
+def buscar_disponibilidades_filme(cursor, tmdb_id):
+    cursor.execute(
+        'SELECT * FROM tblDisponibilidade WHERE tmdb_id = %s;', (tmdb_id,)
+    )
 
-
+    resultado = cursor.fetchall()
+    return resultado
 
 
 
