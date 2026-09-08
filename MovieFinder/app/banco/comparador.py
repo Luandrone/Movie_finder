@@ -45,26 +45,62 @@ def comparar_filmes(filme, filme_banco):
 
     return alteracoes
 
-def comparar_disponibilidades(disponibilidades_atuais, disponibilidades_salvas):
-    adicionadas = []
-    removidas = []
-    chaves_existentes = []
 
-    for disponibilidade in disponibilidades_salvas:
-        chaves_existentes.append((disponibilidade['provider_id'], disponibilidade['tipo']))
+def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
+    novas = []
+    excluidas = []
+    atualizadas = []
+    chaves_banco = []
+    chaves_api = []
 
+    for disponibilidade_banco in disponibilidades_banco:
+        chaves_banco.append((disponibilidade_banco['provider_id'], disponibilidade_banco['tipo']))
 
-    for disponibilidade in disponibilidades_atuais:
-        resultado = (disponibilidade['provider_id'], disponibilidade['tipo'])
-        if resultado not in chaves_existentes:
-            adicionadas.append(disponibilidade)
+    for disponibilidade_api in disponibilidades_api:
+        chave_api = (disponibilidade_api['provider_id'], disponibilidade_api['tipo'])
 
+        if chave_api not in chaves_banco:
+            novas.append(disponibilidade_api)
 
+        if chave_api in chaves_banco:
+            for disponibilidade_banco in disponibilidades_banco:
+                if disponibilidade_banco['provider_id'] == chave_api[0] and disponibilidade_banco['tipo'] == chave_api[
+                    1]:
 
+                    if disponibilidade_api['provider_name'] != disponibilidade_banco['provider_name']:
+                        atualizadas.append({
+                            'campo': 'provider_name',
+                            'anterior': disponibilidade_banco['provider_name'],
+                            'novo': disponibilidade_api['provider_name']
+                        })
 
+                    if disponibilidade_api['logo_path'] != disponibilidade_banco['logo_path']:
+                        atualizadas.append({
+                            'campo': 'logo_path',
+                            'anterior': disponibilidade_banco['logo_path'],
+                            'novo': disponibilidade_api['logo_path']
+                        })
 
+                    if disponibilidade_api['link'] != disponibilidade_banco['link']:
+                        atualizadas.append({
+                            'campo': 'link',
+                            'anterior': disponibilidade_banco['link'],
+                            'novo': disponibilidade_api['link']
+                        })
 
+    for disponibilidade_api in disponibilidades_api:
+        chaves_api.append(
+            (disponibilidade_api['provider_id'], disponibilidade_api['tipo'])
+        )
 
+    for disponibilidade_banco in disponibilidades_banco:
+        chave_banco = (disponibilidade_banco['provider_id'], disponibilidade_banco['tipo'])
 
+        if chave_banco not in chaves_api:
+            excluidas.append(disponibilidade_banco)
 
-
+    return {
+        'novas': novas,
+        'atualizadas': atualizadas,
+        'excluidas': excluidas
+    }
