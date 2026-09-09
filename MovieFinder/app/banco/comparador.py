@@ -66,26 +66,34 @@ def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
             for disponibilidade_banco in disponibilidades_banco:
                 if disponibilidade_banco['provider_id'] == chave_api[0] and disponibilidade_banco['tipo'] == chave_api[
                     1]:
+                    alteracoes_disponibilidade = []
 
                     if disponibilidade_api['provider_name'] != disponibilidade_banco['provider_name']:
-                        atualizadas.append({
+                        alteracoes_disponibilidade.append({
                             'campo': 'provider_name',
                             'anterior': disponibilidade_banco['provider_name'],
                             'novo': disponibilidade_api['provider_name']
                         })
 
                     if disponibilidade_api['logo_path'] != disponibilidade_banco['logo_path']:
-                        atualizadas.append({
+                        alteracoes_disponibilidade.append({
                             'campo': 'logo_path',
                             'anterior': disponibilidade_banco['logo_path'],
                             'novo': disponibilidade_api['logo_path']
                         })
 
                     if disponibilidade_api['link'] != disponibilidade_banco['link']:
-                        atualizadas.append({
+                        alteracoes_disponibilidade.append({
                             'campo': 'link',
                             'anterior': disponibilidade_banco['link'],
                             'novo': disponibilidade_api['link']
+                        })
+
+                    if alteracoes_disponibilidade:
+                        atualizadas.append({
+                            'provider_id': disponibilidade_api['provider_id'],
+                            'tipo': disponibilidade_api['tipo'],
+                            'alteracoes': alteracoes_disponibilidade
                         })
 
     for disponibilidade_api in disponibilidades_api:

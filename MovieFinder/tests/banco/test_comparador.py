@@ -1,6 +1,5 @@
 from app.banco.comparador import comparar_filmes, comparar_disponibilidades
 from app.filme import Filme
-from teste_postgres import resultado
 
 
 def test_comparar_filmes_divergentes():
@@ -128,19 +127,112 @@ def test_comparar_disponibilidades_atualizada():
         'novas': [],
         'atualizadas': [
             {
-                'campo': 'provider_name',
-                'anterior': 'HBO Max',
-                'novo': 'Max'
+                'provider_id': 1899,
+                'tipo': 'flatrate',
+                'alteracoes': [
+                    {
+                        'campo': 'provider_name',
+                        'anterior': 'HBO Max',
+                        'novo': 'Max'
+                    },
+                    {
+                        'campo': 'logo_path',
+                        'anterior': '/hbo-antigo.jpg',
+                        'novo': '/max.jpg'
+                    },
+                    {
+                        'campo': 'link',
+                        'anterior': 'https://teste-antigo.com',
+                        'novo': 'https://teste-novo.com'
+                    }
+                ]
+            }
+        ],
+        'excluidas': []
+    }
+
+
+def test_comparar_disponibilidades_varias_atualizadas():
+    disponibilidades_banco_falso = [
+        {
+            'provider_id': 1899,
+            'provider_name': 'HBO Max',
+            'tipo': 'flatrate',
+            'logo_path': '/hbo-antigo.jpg',
+            'link': 'https://hbo-antigo.com'
+        },
+        {
+            'provider_id': 2,
+            'provider_name': 'Apple TV Store',
+            'tipo': 'buy',
+            'logo_path': '/apple-antigo.jpg',
+            'link': 'https://apple-antigo.com'
+        }
+    ]
+
+    disponibilidades_api_falso = [
+        {
+            'provider_id': 1899,
+            'provider_name': 'Max',
+            'tipo': 'flatrate',
+            'logo_path': '/max.jpg',
+            'link': 'https://max.com'
+        },
+        {
+            'provider_id': 2,
+            'provider_name': 'Apple TV',
+            'tipo': 'buy',
+            'logo_path': '/apple.jpg',
+            'link': 'https://apple.com'
+        }
+    ]
+
+    resultado = comparar_disponibilidades(disponibilidades_api_falso, disponibilidades_banco_falso)
+
+    assert resultado == {
+        'novas': [],
+        'atualizadas': [
+            {
+                'provider_id': 1899,
+                'tipo': 'flatrate',
+                'alteracoes': [
+                    {
+                        'campo': 'provider_name',
+                        'anterior': 'HBO Max',
+                        'novo': 'Max'
+                    },
+                    {
+                        'campo': 'logo_path',
+                        'anterior': '/hbo-antigo.jpg',
+                        'novo': '/max.jpg'
+                    },
+                    {
+                        'campo': 'link',
+                        'anterior': 'https://hbo-antigo.com',
+                        'novo': 'https://max.com'
+                    }
+                ]
             },
             {
-                'campo': 'logo_path',
-                'anterior': '/hbo-antigo.jpg',
-                'novo': '/max.jpg'
-            },
-            {
-                'campo': 'link',
-                'anterior': 'https://teste-antigo.com',
-                'novo': 'https://teste-novo.com'
+                'provider_id': 2,
+                'tipo': 'buy',
+                'alteracoes': [
+                    {
+                        'campo': 'provider_name',
+                        'anterior': 'Apple TV Store',
+                        'novo': 'Apple TV'
+                    },
+                    {
+                        'campo': 'logo_path',
+                        'anterior': '/apple-antigo.jpg',
+                        'novo': '/apple.jpg'
+                    },
+                    {
+                        'campo': 'link',
+                        'anterior': 'https://apple-antigo.com',
+                        'novo': 'https://apple.com'
+                    }
+                ]
             }
         ],
         'excluidas': []
@@ -237,23 +329,30 @@ def test_comparar_disponibilidades_mista():
                 'link': 'https://disney.com'
             }
         ],
-        'atualizadas': [
-            {
-                'campo': 'provider_name',
-                'anterior': 'HBO Max',
-                'novo': 'Max'
-            },
-            {
-                'campo': 'logo_path',
-                'anterior': '/hbo-antigo.jpg',
-                'novo': '/max.jpg'
-            },
-            {
-                'campo': 'link',
-                'anterior': 'https://antigo.com',
-                'novo': 'https://novo.com'
-            }
-        ],
+        'atualizadas':
+            [
+                {
+                    'provider_id': 1899,
+                    'tipo': 'flatrate',
+                    'alteracoes': [
+                        {
+                            'campo': 'provider_name',
+                            'anterior': 'HBO Max',
+                            'novo': 'Max'
+                        },
+                        {
+                            'campo': 'logo_path',
+                            'anterior': '/hbo-antigo.jpg',
+                            'novo': '/max.jpg'
+                        },
+                        {
+                            'campo': 'link',
+                            'anterior': 'https://antigo.com',
+                            'novo': 'https://novo.com'
+                        }
+                    ]
+                }
+            ],
         'excluidas': [
             {
                 'provider_id': 10,
