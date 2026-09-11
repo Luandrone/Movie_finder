@@ -50,65 +50,56 @@ def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
     novas = []
     excluidas = []
     atualizadas = []
-    chaves_banco = []
-    chaves_api = []
+    chaves_api = set()
+    campos = ['provider_name', 'logo_path', 'link']
+
+    disponibilidades_por_chave = {}
 
     for disponibilidade_banco in disponibilidades_banco:
-        chaves_banco.append((disponibilidade_banco['provider_id'], disponibilidade_banco['tipo']))
+        chave_banco = (
+            disponibilidade_banco['provider_id'],
+            disponibilidade_banco['tipo'],
+        )
+        disponibilidades_por_chave[chave_banco] = disponibilidade_banco
 
     for disponibilidade_api in disponibilidades_api:
-        chave_api = (disponibilidade_api['provider_id'], disponibilidade_api['tipo'])
+        chave_api = (
+            disponibilidade_api['provider_id'],
+            disponibilidade_api['tipo']
+        )
+        chaves_api.add(chave_api)
 
-        if chave_api not in chaves_banco:
+        if chave_api not in disponibilidades_por_chave:
             novas.append(disponibilidade_api)
 
-        if chave_api in chaves_banco:
-            for disponibilidade_banco in disponibilidades_banco:
-                if disponibilidade_banco['provider_id'] == chave_api[0] and disponibilidade_banco['tipo'] == chave_api[
-                    1]:
-                    alteracoes_disponibilidade = []
+        else:
+            disponibilidade_banco = disponibilidades_por_chave[chave_api]
 
-                    if disponibilidade_api['provider_name'] != disponibilidade_banco['provider_name']:
-                        alteracoes_disponibilidade.append({
-                            'campo': 'provider_name',
-                            'anterior': disponibilidade_banco['provider_name'],
-                            'novo': disponibilidade_api['provider_name']
-                        })
+            alteracoes_disponibilidade = []
 
-                    if disponibilidade_api['logo_path'] != disponibilidade_banco['logo_path']:
-                        alteracoes_disponibilidade.append({
-                            'campo': 'logo_path',
-                            'anterior': disponibilidade_banco['logo_path'],
-                            'novo': disponibilidade_api['logo_path']
-                        })
+            for campo in campos:
+                if disponibilidade_api[campo] != disponibilidade_banco[campo]:
+                    alteracoes_disponibilidade.append({
+                        'campo': campo,
+                        'anterior': disponibilidade_banco[campo],
+                        'novo': disponibilidade_api[campo]
+                    })
 
-                    if disponibilidade_api['link'] != disponibilidade_banco['link']:
-                        alteracoes_disponibilidade.append({
-                            'campo': 'link',
-                            'anterior': disponibilidade_banco['link'],
-                            'novo': disponibilidade_api['link']
-                        })
+            if alteracoes_disponibilidade:
+                atualizadas.append({
+                    'provider_id': disponibilidade_api['provider_id'],
+                    'tipo': disponibilidade_api['tipo'],
+                    'alteracoes': alteracoes_disponibilidade
+                })
 
-                    if alteracoes_disponibilidade:
-                        atualizadas.append({
-                            'provider_id': disponibilidade_api['provider_id'],
-                            'tipo': disponibilidade_api['tipo'],
-                            'alteracoes': alteracoes_disponibilidade
-                        })
+    chaves_banco = set(disponibilidades_por_chave.keys())
+    chaves_excluidas = chaves_banco - chaves_api
 
-    for disponibilidade_api in disponibilidades_api:
-        chaves_api.append(
-            (disponibilidade_api['provider_id'], disponibilidade_api['tipo'])
-        )
-
-    for disponibilidade_banco in disponibilidades_banco:
-        chave_banco = (disponibilidade_banco['provider_id'], disponibilidade_banco['tipo'])
-
-        if chave_banco not in chaves_api:
-            excluidas.append(disponibilidade_banco)
+    for chave in chaves_excluidas:
+        excluidas.append(disponibilidades_por_chave[chave])
 
     return {
         'novas': novas,
         'atualizadas': atualizadas,
         'excluidas': excluidas
-    }
+}
