@@ -62,8 +62,28 @@ def buscar_disponibilidades_filme(cursor, tmdb_id):
     resultado = cursor.fetchall()
     return resultado
 
+def atualizar_disponibilidade(cursor, tmdb_id, provider_id, tipo, valores_alterados):
+    campos = []
+    valores = []
 
+    for alteracao in valores_alterados:
+        campos.append(alteracao['campo'] + ' = %s')
+        valores.append(alteracao['novo'])
 
+    lista_de_campos = ', '.join(campos)
+    valores.extend([tmdb_id, provider_id, tipo])
+    sql_update = 'UPDATE tblDisponibilidade SET ' + lista_de_campos + ' WHERE tmdb_id = %s AND provider_id = %s AND tipo = %s;'
+    cursor.execute(sql_update, valores)
+
+def excluir_disponibilidade(cursor, tmdb_id, provider_id, tipo):
+
+    sql_delete = 'DELETE FROM tblDisponibilidade WHERE tmdb_id = %s AND provider_id = %s AND tipo = %s;'
+    cursor.execute(sql_delete, (tmdb_id, provider_id, tipo))
+
+def sincronizar_disponibilidades(cursor, filme, resultado):
+
+    for nova in resultado['novas']:
+        inserir_disponibilidade(cursor, filme, nova)
 
 
 

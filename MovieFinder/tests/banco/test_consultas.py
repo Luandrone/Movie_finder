@@ -1,8 +1,10 @@
 from decimal import Decimal
 from unittest.mock import Mock, patch
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
-    inserir_disponibilidade, buscar_disponibilidade, buscar_disponibilidades_filme
+    inserir_disponibilidade, buscar_disponibilidade, buscar_disponibilidades_filme, atualizar_disponibilidade, \
+    excluir_disponibilidade
 from app.filme import Filme
+
 
 def test_buscar_todos_filmes():
     mock_cursor = Mock()
@@ -23,6 +25,7 @@ def test_buscar_todos_filmes():
     assert resultado == resultado_falso
     mock_cursor.execute.assert_called_once_with('SELECT * FROM tblFilmes;')
     mock_cursor.fetchall.assert_called_once_with()
+
 
 def test_buscar_por_tmdb_id():
     mock_cursor = Mock()
@@ -46,6 +49,7 @@ def test_buscar_por_tmdb_id():
     )
     mock_cursor.fetchone.assert_called_once_with()
 
+
 def test_buscar_por_tmdb_id_nao_encontrado():
     mock_cursor = Mock()
     mock_cursor.fetchone.return_value = None
@@ -57,6 +61,7 @@ def test_buscar_por_tmdb_id_nao_encontrado():
         'SELECT * FROM tblFilmes WHERE tmdb_id = %s;',
         (123,)
     )
+
 
 def test_inserir_filme():
     mock_cursor = Mock()
@@ -77,13 +82,16 @@ def test_inserir_filme():
         )
     )
 
+
 def test_atualizar_filme():
     mock_cursor = Mock()
     campos_atualizacao = 'titulo = %s, ano = %s, duracao = %s'
     valores = ['The Batman', 2022, 176, 212]
     atualizar_filme(mock_cursor, campos_atualizacao, valores)
 
-    mock_cursor.execute.assert_called_once_with('UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;', valores)
+    mock_cursor.execute.assert_called_once_with('UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;',
+                                                valores)
+
 
 def test_inserir_disponibilidade():
     mock_cursor = Mock()
@@ -118,6 +126,7 @@ def test_inserir_disponibilidade():
         )
     )
 
+
 def test_buscar_disponibilidade():
     mock_cursor = Mock()
 
@@ -142,6 +151,7 @@ def test_buscar_disponibilidade():
 
     assert resultado == resultado_falso
     mock_cursor.fetchone.assert_called_once_with()
+
 
 def test_buscar_disponibilidades_filme():
     resultado_falso = [
@@ -177,29 +187,87 @@ def test_buscar_disponibilidades_filme():
     mock_cursor.fetchall.assert_called_once_with()
 
 
+def test_atualizar_disponibilidade_uma_alteracao():
+    valores_alterados = [
+        {
+            'campo': 'link',
+            'anterior': 'https://link-antigo.com',
+            'novo': 'https://link-novo.com'
+        }
+    ]
+
+    mock_cursor = Mock()
+
+    atualizar_disponibilidade(mock_cursor, 123456, 8, 'streaming', valores_alterados)
+
+    assert mock_cursor.execute.called
+    sql_executado, valores = mock_cursor.execute.call_args.args
+
+    assert sql_executado == (
+        'UPDATE tblDisponibilidade SET link = %s '
+        'WHERE tmdb_id = %s AND provider_id = %s AND tipo = %s;'
+    )
+    assert valores == [
+        'https://link-novo.com',
+        123456,
+        8,
+        'streaming'
+    ]
 
 
+def test_atualizar_disponibilidade_duas_alteracoes():
+    valores_alterados = [
+        {
+            'campo': 'link',
+            'anterior': 'https://link-antigo.com',
+            'novo': 'https://link-novo.com'
+        },
+        {
+            'campo': 'logo_path',
+            'anterior': '/logo-antigo.png',
+            'novo': '/logo-novo.png'
+        }
+    ]
 
+    mock_cursor = Mock()
 
+    atualizar_disponibilidade(mock_cursor, 123456, 8, 'streaming', valores_alterados)
 
+    assert mock_cursor.execute.called
+    sql_executado, valores = mock_cursor.execute.call_args.args
+    assert sql_executado == (
+        'UPDATE tblDisponibilidade'
+        ' SET link = %s, logo_path = %s'
+        ' WHERE tmdb_id = %s'
+        ' AND provider_id = %s'
+        ' AND tipo = %s;'
 
+    )
+    assert valores == [
+        'https://link-novo.com',
+        '/logo-novo.png',
+        123456,
+        8,
+        'streaming'
+    ]
 
+def test_excluir_disponibilidade():
+    mock_cursor = Mock()
 
+    excluir_disponibilidade(mock_cursor, 123456, 8, 'streaming')
 
+    assert mock_cursor.execute.called
+    sql_executado, valores = mock_cursor.execute.call_args.args
 
+    assert sql_executado == (
+        'DELETE FROM tblDisponibilidade '
+        'WHERE tmdb_id = %s '
+        'AND provider_id = %s '
+        'AND tipo = %s;'
+    )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    assert valores == (
+        123456,
+        8,
+        'streaming'
+    )

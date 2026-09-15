@@ -84,7 +84,3 @@ def buscar_disponibilidade(filme):
         filme.disponibilidade = {}
     else:
         filme.disponibilidade = dados_brasil
-
-
-
-
