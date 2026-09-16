@@ -85,10 +85,11 @@ def sincronizar_disponibilidades(cursor, filme, resultado):
     for nova in resultado['novas']:
         inserir_disponibilidade(cursor, filme, nova)
 
+    for atualizada in resultado['atualizadas']:
+        atualizar_disponibilidade(cursor, filme.id, atualizada['provider_id'], atualizada['tipo'], atualizada['alteracoes'])
 
-
-
-
+    for excluida in resultado['excluidas']:
+        excluir_disponibilidade(cursor, filme.id, excluida['provider_id'], excluida['tipo'])
 
 
 

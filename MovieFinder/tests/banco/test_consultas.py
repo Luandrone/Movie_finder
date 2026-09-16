@@ -2,7 +2,7 @@ from decimal import Decimal
 from unittest.mock import Mock, patch
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
     inserir_disponibilidade, buscar_disponibilidade, buscar_disponibilidades_filme, atualizar_disponibilidade, \
-    excluir_disponibilidade
+    excluir_disponibilidade, sincronizar_disponibilidades
 from app.filme import Filme
 
 
@@ -271,3 +271,94 @@ def test_excluir_disponibilidade():
         8,
         'streaming'
     )
+
+
+def test_sincronizar_disponibilidades():
+    resultado = {
+        'novas': [
+            {
+                'provider_id': 8,
+                'provider_name': 'Netflix',
+                'tipo': 'streaming',
+                'logo_path': '/netflix.png',
+                'link': 'https://netflix.com'
+            }
+        ],
+
+        'atualizadas': [
+            {
+                'provider_id': 10,
+                'tipo': 'rent',
+                'alteracoes': [
+                    {
+                        'campo': 'link',
+                        'anterior': 'https://link-antigo.com',
+                        'novo': 'https://link-novo.com'
+                    }
+                ]
+            }
+        ],
+
+        'excluidas': [
+            {
+                'provider_id': 15,
+                'provider_name': 'Prime Video',
+                'tipo': 'buy',
+                'logo_path': '/prime.png',
+                'link': 'https://primevideo.com'
+            }
+        ]
+    }
+
+    mock_cursor = Mock()
+
+    filme = Mock()
+    filme.id = 123456
+
+    with    patch('app.banco.consultas.inserir_disponibilidade') as mock_inserir, \
+            patch('app.banco.consultas.atualizar_disponibilidade') as mock_atualizar, \
+            patch('app.banco.consultas.excluir_disponibilidade') as mock_excluir:
+
+            sincronizar_disponibilidades(mock_cursor, filme, resultado)
+
+    mock_inserir.assert_called_once_with(
+        mock_cursor,
+        filme,
+        resultado['novas'][0]
+    )
+
+    mock_atualizar.assert_called_once_with(
+        mock_cursor,
+        filme.id,
+        resultado['atualizadas'][0]['provider_id'],
+        resultado['atualizadas'][0]['tipo'],
+        resultado['atualizadas'][0]['alteracoes']
+    )
+
+    mock_excluir.assert_called_once_with(
+        mock_cursor,
+        filme.id,
+        resultado['excluidas'][0]['provider_id'],
+        resultado['excluidas'][0]['tipo']
+    )
+
+def test_sincronizar_disponibilidades_nao_chamadas():
+    resultado = {
+        'novas': [],
+        'atualizadas': [],
+        'excluidas': []
+    }
+
+    mock_cursor = Mock()
+    filme = Mock()
+    filme.id = 123456
+
+    with    patch('app.banco.consultas.inserir_disponibilidade') as mock_inserir, \
+            patch('app.banco.consultas.atualizar_disponibilidade') as mock_atualizar, \
+            patch('app.banco.consultas.excluir_disponibilidade') as mock_excluir:
+
+            sincronizar_disponibilidades(mock_cursor, filme, resultado)
+
+    mock_inserir.assert_not_called()
+    mock_atualizar.assert_not_called()
+    mock_excluir.assert_not_called()
