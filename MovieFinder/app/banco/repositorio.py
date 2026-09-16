@@ -1,6 +1,7 @@
-from app.banco.comparador import comparar_filmes
+from app.banco.comparador import comparar_filmes, comparar_disponibilidades
 from app.banco.conexao import obter_conexao
-from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes
+from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
+    buscar_disponibilidades_filme
 from app.banco.mapper import mapear_filme
 
 
@@ -36,26 +37,32 @@ def salvar_filme(filme):
 
         filme_banco = mapear_filme(filme_existente)
         resultado = comparar_filmes(filme, filme_banco)
-        if not resultado:
-            return {'status': 'já_existe'}
 
-        campos_alterados = []
-        valores_novos = []
+        if resultado:
+            campos_alterados = []
+            valores_novos = []
 
-        for alteracao in resultado:
-            campos_alterados.append(alteracao['campo'])
-            valores_novos.append(alteracao['novo'])
+            for alteracao in resultado:
+                campos_alterados.append(alteracao['campo'])
+                valores_novos.append(alteracao['novo'])
 
-        partes_set = []
+            partes_set = []
 
-        for campo in campos_alterados:
-            partes_set.append(campo + ' = %s')
+            for campo in campos_alterados:
+                partes_set.append(campo + ' = %s')
 
-        campos_atualizacao = ', '.join(partes_set)
+            campos_atualizacao = ', '.join(partes_set)
 
-        valores_novos.append(filme.id)
+            valores_novos.append(filme.id)
 
-        atualizar_filme(cursor, campos_atualizacao, valores_novos)
+            atualizar_filme(cursor, campos_atualizacao, valores_novos)
+
+        disponibilidade_banco = buscar_disponibilidades_filme(cursor, filme.id)
+        resultado_disponibilidades = comparar_disponibilidades(filme.disponibilidade, disponibilidade_banco)
+
+
+
+
 
         conn.commit()
 

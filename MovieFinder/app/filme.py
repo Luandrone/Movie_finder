@@ -3,7 +3,7 @@ class Filme:
         if generos is None:
             generos = []
         if disponibilidade is None:
-            disponibilidade = {}
+            disponibilidade = []
         self.titulo = titulo
         self.ano = ano
         self.nota = nota

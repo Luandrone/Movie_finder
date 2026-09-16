@@ -2,7 +2,7 @@ from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
 from app.filme import Filme
-from app.transformador import transformar_filmes
+from app.transformador import transformar_filmes, organizar_disponibilidades
 
 
 def fazer_requisicao(url,cabecalho, parametros=None):
@@ -81,6 +81,6 @@ def buscar_disponibilidade(filme):
     dados_brasil = dados['results'].get('BR')
 
     if dados_brasil is None:
-        filme.disponibilidade = {}
+        filme.disponibilidade = []
     else:
-        filme.disponibilidade = dados_brasil
+        filme.disponibilidade = organizar_disponibilidades(dados_brasil)

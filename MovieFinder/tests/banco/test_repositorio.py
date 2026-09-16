@@ -92,6 +92,7 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
     )
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = linha_do_banco_existente
+    mock_cursor.fetchall.return_value = []
 
     resultado = salvar_filme(filme_falso_existente)
 
@@ -115,6 +116,7 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
 
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = filme_do_banco_existente
+    mock_cursor.fetchall.return_value = []
 
     resultado = salvar_filme(filme_falso_existente)
 

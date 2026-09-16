@@ -13,4 +13,4 @@ def test_valores_padrao_filme():
 
     filme2 = Filme()
     assert filme2.generos == []
-    assert filme2.disponibilidade == {}
+    assert filme2.disponibilidade == []

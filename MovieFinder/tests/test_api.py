@@ -62,13 +62,25 @@ def test_buscar_disponibilidade(mock_disponibilidade):
         'results': {
             'BR': {
                 'flatrate': [
-                    {'provider_name': 'Netflix'}
+                    {
+                        'provider_id': 8,
+                        'provider_name': 'Netflix',
+                        'logo_path': '/netflix.png'
+                    }
                 ],
                 'rent': [
-                    {'provider_name': 'Amazon Video'}
+                    {
+                        'provider_id': 119,
+                        'provider_name': 'Amazon Video',
+                        'logo_path': '/amazon.png'
+                    }
                 ],
                 'buy': [
-                    {'provider_name': 'Google'}
+                    {
+                        'provider_id': 3,
+                        'provider_name': 'Google',
+                        'logo_path': '/google.png'
+                    }
                 ]
             }
         }
@@ -79,7 +91,29 @@ def test_buscar_disponibilidade(mock_disponibilidade):
     filme1 = Filme()
     buscar_disponibilidade(filme1)
 
-    assert filme1.disponibilidade == dados_falsos['results']['BR']
+    assert filme1.disponibilidade == [
+    {
+        'provider_id': 3,
+        'provider_name': 'Google',
+        'tipo': 'buy',
+        'logo_path': '/google.png',
+        'link': None
+    },
+    {
+        'provider_id': 119,
+        'provider_name': 'Amazon Video',
+        'tipo': 'rent',
+        'logo_path': '/amazon.png',
+        'link': None
+    },
+    {
+        'provider_id': 8,
+        'provider_name': 'Netflix',
+        'tipo': 'flatrate',
+        'logo_path': '/netflix.png',
+        'link': None
+    }
+]
 
 @patch('app.api.fazer_requisicao')
 def test_buscar_disponibilidade_sem_brasil(mock_disponibilidade):
@@ -92,7 +126,7 @@ def test_buscar_disponibilidade_sem_brasil(mock_disponibilidade):
     filme1 = Filme()
     buscar_disponibilidade(filme1)
 
-    assert filme1.disponibilidade == {}
+    assert filme1.disponibilidade == []
 
 @patch('app.api.fazer_requisicao')
 def test_buscar_detalhes_dados_ausentes(mock_detalhes):
@@ -131,5 +165,5 @@ def test_buscar_disponibilidade_sem_provedores(mock_disponibilidade):
     filme1 = Filme()
     buscar_disponibilidade(filme1)
 
-    assert filme1.disponibilidade == dados_falsos['results']['BR']
+    assert filme1.disponibilidade == []
 
