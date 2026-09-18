@@ -5,6 +5,7 @@ import pytest
 
 from app.banco.repositorio import buscar_filmes_banco, salvar_filme
 from app.filme import Filme
+from teste_postgres import resultado
 
 
 @patch('app.banco.repositorio.obter_conexao')
@@ -47,6 +48,7 @@ def test_buscar_filmes_banco_sem_filmes(mock_obter_conexao):
     assert resultado == []
     mock_obter_conexao.return_value.close.assert_called_once_with()
 
+
 @patch('app.banco.repositorio.obter_conexao')
 def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
     mock_cursor = Mock()
@@ -58,6 +60,7 @@ def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
         buscar_filmes_banco()
 
     mock_obter_conexao.return_value.close.assert_called_once_with()
+
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_novo(mock_obter_conexao):
@@ -97,8 +100,9 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
     resultado = salvar_filme(filme_falso_existente)
 
     assert resultado == {'status': 'já_existe'}
-    assert len(mock_cursor.execute.call_args_list) == 1
+    assert len(mock_cursor.execute.call_args_list) == 2
     mock_obter_conexao.return_value.close.assert_called_once_with()
+
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
@@ -146,9 +150,187 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
         ]
     }
 
-    assert mock_cursor.execute.call_args_list[1] == call(
-        'UPDATE tblFilmes SET titulo = %s, ano = %s, nota = %s, duracao = %s WHERE tmdb_id = %s;', ['The Batman', 2022, 8.0, 176, 212]
+    assert mock_cursor.execute.call_args_list[2] == call(
+        'UPDATE tblFilmes SET titulo = %s, ano = %s, nota = %s, duracao = %s WHERE tmdb_id = %s;',
+        ['The Batman', 2022, 8.0, 176, 212]
     )
 
     mock_obter_conexao.return_value.commit.assert_called_once_with()
     mock_obter_conexao.return_value.close.assert_called_once_with()
+
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_salvar_filme_somente_disponibilidade_nova(mock_obter_conexao):
+    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme.disponibilidade = [
+        {
+            'provider_id': 8,
+            'provider_name': 'Netflix',
+            'tipo': 'flatrate',
+            'logo_path': '/netflix.png',
+            'link': None
+        }
+    ]
+    mock_cursor = Mock()
+    mock_obter_conexao.return_value.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (
+        1,
+        212,
+        'The Batman',
+        2020,
+        7.0,
+        '',
+        ''
+    )
+    mock_cursor.fetchall.return_value = []
+    with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
+            patch('app.banco.repositorio.atualizar_filme') as mock_atualizar:
+        resultado_disponibilidades = {
+            'novas': [
+                {
+                    'provider_id': 8,
+                    'provider_name': 'Netflix',
+                    'tipo': 'flatrate',
+                    'logo_path': '/netflix.png',
+                    'link': None
+                }
+            ],
+            'atualizadas': [],
+            'excluidas': []
+        }
+
+        resultado = salvar_filme(filme)
+        mock_sincronizar.assert_called_once_with(
+            mock_cursor,
+            filme,
+            resultado_disponibilidades
+        )
+    mock_atualizar.assert_not_called()
+
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
+    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme.disponibilidade = [
+        {
+            'provider_id': 8,
+            'provider_name': 'Netflix',
+            'tipo': 'flatrate',
+            'logo_path': '/netflix.png',
+            'link': 'https://link-novo.com'
+        }
+    ]
+    mock_cursor = Mock()
+    mock_obter_conexao.return_value.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (
+        1,
+        212,
+        'The Batman',
+        2020,
+        7.0,
+        '',
+        ''
+    )
+    mock_cursor.fetchall.return_value = [
+        {
+            'provider_id': 8,
+            'provider_name': 'Netflix',
+            'tipo': 'flatrate',
+            'logo_path': '/netflix.png',
+            'link': 'https://link-antigo.com'
+        }
+    ]
+
+    with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
+            patch('app.banco.repositorio.atualizar_filme') as mock_atualizar:
+        resultado_disponibilidades = {
+            'novas': [],
+            'atualizadas': [
+                {
+                    'provider_id': 8,
+                    'tipo': 'flatrate',
+                    'alteracoes': [
+                        {
+                            'campo': 'link',
+                            'anterior': 'https://link-antigo.com',
+                            'novo': 'https://link-novo.com'
+                        }
+                    ]
+                }
+            ],
+            'excluidas': []
+        }
+        salvar_filme(filme)
+
+        mock_sincronizar.assert_called_once_with(
+            mock_cursor,
+            filme,
+            resultado_disponibilidades
+        )
+
+        mock_atualizar.assert_not_called()
+
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
+    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme.disponibilidade = [
+        {
+            'provider_id': 8,
+            'provider_name': 'Netflix',
+            'tipo': 'flatrate',
+            'logo_path': '/netflix.png',
+            'link': None
+        }
+    ]
+    mock_cursor = Mock()
+    mock_obter_conexao.return_value.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (
+        1,
+        212,
+        'The Batman',
+        2020,
+        7.0,
+        '',
+        ''
+    )
+    mock_cursor.fetchall.return_value = [
+        {
+            'provider_id': 8,
+            'provider_name': 'Netflix',
+            'tipo': 'flatrate',
+            'logo_path': '/netflix.png',
+            'link': None
+        },
+        {
+            'provider_id': 119,
+            'provider_name': 'Amazon Video',
+            'tipo': 'flatrate',
+            'logo_path': '/amazon.png',
+            'link': None
+        }
+    ]
+
+    with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
+            patch('app.banco.repositorio.atualizar_filme') as mock_atualizar:
+        resultado_disponibilidades = {
+            'novas': [],
+            'atualizadas': [],
+            'excluidas': [
+                {
+                    'provider_id': 119,
+                    'provider_name': 'Amazon Video',
+                    'tipo': 'flatrate',
+                    'logo_path': '/amazon.png',
+                    'link': None
+                }
+            ]
+        }
+
+        salvar_filme(filme)
+        mock_sincronizar.assert_called_once_with(
+            mock_cursor,
+            filme,
+            resultado_disponibilidades
+        )
+        mock_atualizar.assert_not_called()
