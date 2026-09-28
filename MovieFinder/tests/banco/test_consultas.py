@@ -85,12 +85,27 @@ def test_inserir_filme():
 
 def test_atualizar_filme():
     mock_cursor = Mock()
-    campos_atualizacao = 'titulo = %s, ano = %s, duracao = %s'
-    valores = ['The Batman', 2022, 176, 212]
-    atualizar_filme(mock_cursor, campos_atualizacao, valores)
+    resultado = [
+        {
+            'campo': 'titulo',
+            'anterior': 'Batman',
+            'novo': 'The Batman'
+        },
+        {
+            'campo': 'ano',
+            'anterior': 2020,
+            'novo': 2022
+        },
+        {
+            'campo': 'duracao',
+            'anterior': 152,
+            'novo': 176
+        }
+    ]
+    atualizar_filme(mock_cursor, 212, resultado)
 
-    mock_cursor.execute.assert_called_once_with('UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;',
-                                                valores)
+    mock_cursor.execute.assert_called_once_with('UPDATE tblFilmes SET titulo = %s, ano = %s, duracao = %s WHERE tmdb_id = %s;',
+                                                ['The Batman', 2022, 176, 212])
 
 
 def test_inserir_disponibilidade():

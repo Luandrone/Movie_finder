@@ -334,3 +334,50 @@ def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
             resultado_disponibilidades
         )
         mock_atualizar.assert_not_called()
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_salvar_filme_faz_rollback_em_erro(mock_obter_conexao):
+    filme = Filme('The Batman', 2020, 7.0, 212)
+    mock_cursor = Mock()
+    mock_conn = mock_obter_conexao.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (
+        1,
+        212,
+        'The Batman',
+        2020,
+        6.5,
+        '',
+        ''
+    )
+    mock_cursor.fetchall.return_value = []
+
+    with patch(
+            'app.banco.repositorio.atualizar_filme',
+            side_effect=Exception('Erro no banco')
+    ):
+
+        with pytest.raises(Exception):
+            salvar_filme(filme)
+
+    mock_conn.rollback.assert_called_once()
+    mock_conn.close.assert_called_once()
+    mock_conn.commit.assert_not_called()
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_salvar_filme_faz_rollback_ao_buscar_filme(mock_obter_conexao):
+    filme = Filme('The Batman', 2020, 7.0, 212)
+    mock_cursor = Mock()
+    mock_conn = mock_obter_conexao.return_value
+    mock_conn.cursor.return_value = mock_cursor
+
+    with patch(
+        'app.banco.repositorio.buscar_por_tmdb_id',
+        side_effect=Exception('Erro ao buscar filme')
+    ):
+        with pytest.raises(Exception):
+            salvar_filme(filme)
+
+    mock_conn.rollback.assert_called_once()
+    mock_conn.close.assert_called_once()
+    mock_conn.commit.assert_not_called()

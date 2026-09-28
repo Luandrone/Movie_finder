@@ -26,9 +26,24 @@ def inserir_filme(cursor, filme):
         )
     )
 
-def atualizar_filme(cursor,campos_atualizacao, valores):
+def atualizar_filme(cursor, filme_id, resultado):
+    campos_alterados = []
+    valores_novos = []
+
+    for alteracao in resultado:
+        campos_alterados.append(alteracao['campo'])
+        valores_novos.append(alteracao['novo'])
+
+    partes_set = []
+
+    for campo in campos_alterados:
+        partes_set.append(campo + ' = %s')
+
+    campos_atualizacao = ', '.join(partes_set)
+    valores_novos.append(filme_id)
+
     sql_update = 'UPDATE tblFilmes SET ' + campos_atualizacao + ' WHERE tmdb_id = %s;'
-    cursor.execute(sql_update, valores)
+    cursor.execute(sql_update, valores_novos)
 
 def inserir_disponibilidade(cursor, filme, disponibilidade):
     cursor.execute(
