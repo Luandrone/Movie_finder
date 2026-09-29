@@ -2,7 +2,7 @@ from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
 from app.menu import selecionar_filme
 from app.excecoes import ErroApi
-
+from app.banco.repositorio import salvar_filme
 
 def buscar_e_mostrar_filme():
 
@@ -19,6 +19,7 @@ def buscar_e_mostrar_filme():
             buscar_detalhes(filme)
 
             buscar_disponibilidade(filme)
+            salvar_filme(filme)
 
             mostrar_filme(filme)
 
