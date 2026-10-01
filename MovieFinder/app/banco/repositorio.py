@@ -2,7 +2,7 @@ from app.banco.comparador import comparar_filmes, comparar_disponibilidades
 from app.banco.conexao import obter_conexao
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
     buscar_disponibilidades_filme, sincronizar_disponibilidades
-from app.banco.mapper import mapear_filme
+from app.banco.mapper import mapear_filme, mapear_disponibilidade
 
 
 def buscar_filmes_banco():
@@ -39,7 +39,14 @@ def salvar_filme(filme):
         resultado = comparar_filmes(filme, filme_banco)
 
         disponibilidade_banco = buscar_disponibilidades_filme(cursor, filme.id)
-        resultado_disponibilidades = comparar_disponibilidades(filme.disponibilidade, disponibilidade_banco)
+
+        lista_disponibilidades = []
+
+        for linha in disponibilidade_banco:
+            disponibilidade = mapear_disponibilidade(linha)
+            lista_disponibilidades.append(disponibilidade)
+
+        resultado_disponibilidades = comparar_disponibilidades(filme.disponibilidade, lista_disponibilidades)
 
         if not resultado and not any(resultado_disponibilidades.values()):
             return {'status': 'já_existe'}

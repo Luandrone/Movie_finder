@@ -19,7 +19,14 @@ def buscar_e_mostrar_filme():
             buscar_detalhes(filme)
 
             buscar_disponibilidade(filme)
-            salvar_filme(filme)
+
+            resultado = salvar_filme(filme)
+            if resultado['status'] == 'atualizado':
+                print(f'Filme atualizado no banco com sucesso!')
+            elif resultado['status'] == 'já_existe':
+                print('Não houve mudança no banco!')
+            elif resultado['status'] == 'novo':
+                print('Filme salvo no banco com sucesso!')
 
             mostrar_filme(filme)
 

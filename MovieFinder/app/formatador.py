@@ -20,22 +20,19 @@ def mostrar_disponibilidade(filme):
 
     encontrou_categoria = False
 
-    if filme.disponibilidade:
-
-        servicos = {
-            'flatrate': 'Disponível por assinatura',
-            'rent': 'Disponível para alugar',
-            'buy': 'Disponível para comprar',
-        }
-
-        for categoria in servicos:
-
-            if filme.disponibilidade.get(categoria):
-                encontrou_categoria = True
-                print(servicos[categoria])
-
-                for item in filme.disponibilidade[categoria]:
-                    print(f'-{item["provider_name"]}')
+    for disponibilidade in filme.disponibilidade:
+        if disponibilidade['tipo'] == 'buy':
+            encontrou_categoria = True
+            print(f'Disponível para comprar \n'
+                  f'- {disponibilidade["provider_name"]}\n')
+        elif disponibilidade['tipo'] == 'rent':
+            encontrou_categoria = True
+            print(f'Disponível para alugar \n'
+                  f'- {disponibilidade["provider_name"]}\n')
+        elif disponibilidade['tipo'] == 'flatrate':
+            encontrou_categoria = True
+            print(f'Disponível por assinatura \n'
+                  f'- {disponibilidade["provider_name"]}\n')
 
     if not encontrou_categoria:
         print('Filme indisponível')

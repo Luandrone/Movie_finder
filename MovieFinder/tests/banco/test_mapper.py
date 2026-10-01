@@ -1,6 +1,7 @@
 from decimal import Decimal
 
-from app.banco.mapper import mapear_filme
+from app.banco.mapper import mapear_filme, mapear_disponibilidade
+
 
 def test_mapear_filme():
     linha_falsa = (
@@ -21,3 +22,23 @@ def test_mapear_filme():
     assert filme.nota == Decimal('8.0')
     assert filme.sinopse == 'blabla'
     assert filme.duracao == 210
+
+def test_mapear_disponibilidade():
+    linha_falsa = (
+        1,
+        414906,
+        2,
+        'Apple TV Store',
+        'buy',
+        '/alguma-imagem',
+        'https://algum-link.com'
+                   )
+    resultado = mapear_disponibilidade(linha_falsa)
+
+    assert resultado == {
+    'provider_id': 2,
+    'provider_name': 'Apple TV Store',
+    'tipo': 'buy',
+    'logo_path': '/alguma-imagem',
+    'link': 'https://algum-link.com'
+}

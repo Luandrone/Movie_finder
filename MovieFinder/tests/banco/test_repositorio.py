@@ -232,13 +232,15 @@ def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
         ''
     )
     mock_cursor.fetchall.return_value = [
-        {
-            'provider_id': 8,
-            'provider_name': 'Netflix',
-            'tipo': 'flatrate',
-            'logo_path': '/netflix.png',
-            'link': 'https://link-antigo.com'
-        }
+        (
+            8,
+            212,
+            8,
+            'Netflix',
+            'flatrate',
+            '/netflix.png',
+            'https://link-antigo.com'
+        )
     ]
 
     with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
@@ -295,20 +297,24 @@ def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
         ''
     )
     mock_cursor.fetchall.return_value = [
-        {
-            'provider_id': 8,
-            'provider_name': 'Netflix',
-            'tipo': 'flatrate',
-            'logo_path': '/netflix.png',
-            'link': None
-        },
-        {
-            'provider_id': 119,
-            'provider_name': 'Amazon Video',
-            'tipo': 'flatrate',
-            'logo_path': '/amazon.png',
-            'link': None
-        }
+        (
+            1,
+            212,
+            8,
+            'Netflix',
+            'flatrate',
+            '/netflix.png',
+            None
+        ),
+        (
+            2,
+            212,
+            119,
+            'Amazon Video',
+            'flatrate',
+            '/amazon.png',
+            None
+        )
     ]
 
     with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
