@@ -27,8 +27,8 @@ def test_buscar_filmes_banco(mock_obter_conexao):
     resultado = resultado[0]
 
     assert resultado.titulo == 'Batman'
-    assert resultado.ano == 2021
-    assert resultado.nota == Decimal('8.0')
+    assert resultado.ano == '2021'
+    assert resultado.nota == 8.0
     assert resultado.id == 123
     assert resultado.sinopse == 'blabla'
     assert resultado.duracao == 210
@@ -64,7 +64,7 @@ def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_novo(mock_obter_conexao):
-    filme_falso = Filme('Batman', 2020, 7.0, 212)
+    filme_falso = Filme('Batman', '2020', 7.0, 212)
     mock_cursor = Mock()
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = None
@@ -74,7 +74,7 @@ def test_salvar_filme_novo(mock_obter_conexao):
     assert mock_cursor.execute.call_args_list[1] == call(
         'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
         'VALUES (%s, %s, %s, %s, %s, %s);',
-        (212, 'Batman', 2020, 7.0, '', '')
+        (212, 'Batman', '2020', 7.0, '', '')
     )
 
     mock_obter_conexao.return_value.close.assert_called_once_with()
@@ -82,7 +82,7 @@ def test_salvar_filme_novo(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_ja_existente(mock_obter_conexao):
-    filme_falso_existente = Filme('Batman', 2020, 7.0, 212, )
+    filme_falso_existente = Filme('Batman', '2020', 7.0, 212, )
     mock_cursor = Mock()
     linha_do_banco_existente = (
         1,
@@ -106,7 +106,7 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
-    filme_falso_existente = Filme('The Batman', 2022, 8.0, 212, 'blabla', 176)
+    filme_falso_existente = Filme('The Batman', '2022', 8.0, 212, 'blabla', 176)
     filme_do_banco_existente = (
         1,
         212,
@@ -134,8 +134,8 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
             },
             {
                 'campo': 'ano',
-                'anterior': 2020,
-                'novo': 2022
+                'anterior': '2020',
+                'novo': '2022'
             },
             {
                 'campo': 'nota',
@@ -152,7 +152,7 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
 
     assert mock_cursor.execute.call_args_list[2] == call(
         'UPDATE tblFilmes SET titulo = %s, ano = %s, nota = %s, duracao = %s WHERE tmdb_id = %s;',
-        ['The Batman', 2022, 8.0, 176, 212]
+        ['The Batman', '2022', 8.0, 176, 212]
     )
 
     mock_obter_conexao.return_value.commit.assert_called_once_with()
@@ -161,7 +161,7 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_somente_disponibilidade_nova(mock_obter_conexao):
-    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme = Filme('The Batman', '2020', 7.0, 212)
     filme.disponibilidade = [
         {
             'provider_id': 8,
@@ -177,7 +177,7 @@ def test_salvar_filme_somente_disponibilidade_nova(mock_obter_conexao):
         1,
         212,
         'The Batman',
-        2020,
+        '2020',
         7.0,
         '',
         ''
@@ -210,7 +210,7 @@ def test_salvar_filme_somente_disponibilidade_nova(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
-    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme = Filme('The Batman', '2020', 7.0, 212)
     filme.disponibilidade = [
         {
             'provider_id': 8,
@@ -226,7 +226,7 @@ def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
         1,
         212,
         'The Batman',
-        2020,
+        '2020',
         7.0,
         '',
         ''
@@ -275,7 +275,7 @@ def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
-    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme = Filme('The Batman', '2020', 7.0, 212)
     filme.disponibilidade = [
         {
             'provider_id': 8,
@@ -291,7 +291,7 @@ def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
         1,
         212,
         'The Batman',
-        2020,
+        '2020',
         7.0,
         '',
         ''
@@ -343,7 +343,7 @@ def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_faz_rollback_em_erro(mock_obter_conexao):
-    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme = Filme('The Batman', '2020', 7.0, 212)
     mock_cursor = Mock()
     mock_conn = mock_obter_conexao.return_value
     mock_conn.cursor.return_value = mock_cursor
@@ -351,7 +351,7 @@ def test_salvar_filme_faz_rollback_em_erro(mock_obter_conexao):
         1,
         212,
         'The Batman',
-        2020,
+        '2020',
         6.5,
         '',
         ''
@@ -372,7 +372,7 @@ def test_salvar_filme_faz_rollback_em_erro(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_faz_rollback_ao_buscar_filme(mock_obter_conexao):
-    filme = Filme('The Batman', 2020, 7.0, 212)
+    filme = Filme('The Batman', '2020', 7.0, 212)
     mock_cursor = Mock()
     mock_conn = mock_obter_conexao.return_value
     mock_conn.cursor.return_value = mock_cursor

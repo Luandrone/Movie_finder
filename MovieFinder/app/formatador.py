@@ -19,20 +19,39 @@ def mostrar_filme(filme):
 def mostrar_disponibilidade(filme):
 
     encontrou_categoria = False
+    comprar = []
+    alugar = []
+    assinatura = []
 
     for disponibilidade in filme.disponibilidade:
         if disponibilidade['tipo'] == 'buy':
+            comprar.append(disponibilidade['provider_name'])
             encontrou_categoria = True
-            print(f'Disponível para comprar \n'
-                  f'- {disponibilidade["provider_name"]}\n')
+
         elif disponibilidade['tipo'] == 'rent':
+            alugar.append(disponibilidade['provider_name'])
             encontrou_categoria = True
-            print(f'Disponível para alugar \n'
-                  f'- {disponibilidade["provider_name"]}\n')
+
         elif disponibilidade['tipo'] == 'flatrate':
+            assinatura.append(disponibilidade['provider_name'])
             encontrou_categoria = True
-            print(f'Disponível por assinatura \n'
-                  f'- {disponibilidade["provider_name"]}\n')
+
+
+    if comprar:
+        print('Disponível para comprar')
+        for provedor in comprar:
+            print(f' - {provedor}')
+
+    if alugar:
+        print('Disponível para alugar')
+        for provedor in alugar:
+            print(f' - {provedor}')
+
+    if assinatura:
+        print('Disponível para assinatura')
+        for provedor in assinatura:
+            print(f' - {provedor}')
+
 
     if not encontrou_categoria:
         print('Filme indisponível')

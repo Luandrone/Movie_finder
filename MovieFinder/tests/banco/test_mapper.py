@@ -18,8 +18,8 @@ def test_mapear_filme():
 
     assert filme.id == 123
     assert filme.titulo == 'Batman'
-    assert filme.ano == 2021
-    assert filme.nota == Decimal('8.0')
+    assert filme.ano == '2021'
+    assert filme.nota == 8.0
     assert filme.sinopse == 'blabla'
     assert filme.duracao == 210
 
