@@ -1,5 +1,6 @@
 
 
+
 def mostrar_resultado(lista_de_filmes):
     print('RESULTADO')
     for indice,filme in enumerate(lista_de_filmes):
@@ -55,5 +56,6 @@ def mostrar_disponibilidade(filme):
 
     if not encontrou_categoria:
         print('Filme indisponível')
+
 
 

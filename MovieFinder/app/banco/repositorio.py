@@ -69,3 +69,25 @@ def salvar_filme(filme):
 
     finally:
         conn.close()
+
+def buscar_disponibilidades_do_filme_no_banco(filme):
+    conn = obter_conexao()
+
+    try:
+        cursor = conn.cursor()
+
+        disponibilidades_banco = buscar_disponibilidades_filme(cursor, filme.id)
+
+        lista_disponibilidades = []
+
+        for linha in disponibilidades_banco:
+            lista_disponibilidades.append(mapear_disponibilidade(linha))
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+    return lista_disponibilidades

@@ -2,7 +2,8 @@ from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
 from app.menu import selecionar_filme
 from app.excecoes import ErroApi
-from app.banco.repositorio import salvar_filme
+from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco
+
 
 def buscar_e_mostrar_filme():
 
@@ -43,6 +44,18 @@ def buscar_e_mostrar_filme():
         else:
             print('Algum problema ocorreu!')
         return
+
+def exibir_filmes_do_banco():
+
+    filmes = buscar_filmes_banco()
+
+    if filmes:
+        mostrar_resultado(filmes)
+        filme = selecionar_filme(filmes)
+        filme.disponibilidade = buscar_disponibilidades_do_filme_no_banco(filme)
+        mostrar_filme(filme)
+    else:
+        print('Não existe nenhum filme salvo atualmente')
 
 
 
