@@ -15,7 +15,7 @@ def buscar_por_tmdb_id(cursor, tmdb_id):
 def inserir_filme(cursor, filme):
     cursor.execute(
         'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
-        'VALUES (%s, %s, %s, %s, %s, %s);',
+        'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;',
         (
             filme.id,
             filme.titulo,
@@ -25,6 +25,9 @@ def inserir_filme(cursor, filme):
             filme.duracao
         )
     )
+
+    resultado = cursor.fetchone()
+    return resultado[0]
 
 def atualizar_filme(cursor, filme_id, resultado):
     campos_alterados = []
@@ -106,7 +109,39 @@ def sincronizar_disponibilidades(cursor, filme, resultado):
     for excluida in resultado['excluidas']:
         excluir_disponibilidade(cursor, filme.id, excluida['provider_id'], excluida['tipo'])
 
+def buscar_genero_por_tmdb_id(cursor, tmdb_id):
+    cursor.execute(
+        'SELECT * FROM tblGeneros WHERE tmdb_id = %s;', (tmdb_id,)
+    )
 
+    resultado = cursor.fetchone()
+
+    return resultado
+
+def inserir_genero(cursor, genero):
+    cursor.execute(
+        'INSERT INTO tblGeneros (tmdb_id, nome) VALUES (%s, %s) RETURNING id;', (genero['tmdb_id'], genero['nome'])
+    )
+
+    resultado = cursor.fetchone()
+
+    return resultado[0]
+
+def inserir_filme_genero(cursor, filme_id, genero_id):
+    cursor.execute(
+        'INSERT INTO tblFilmeGeneros (filme_id, genero_id) VALUES (%s, %s);', (filme_id, genero_id)
+    )
+
+def buscar_generos_filme(cursor, filme_id):
+    cursor.execute(
+        'SELECT g.tmdb_id, g.nome '
+        'FROM tblFilmeGeneros fg '
+        'JOIN tblGeneros g ON g.id = fg.genero_id '
+        'WHERE fg.filme_id = %s;', (filme_id,)
+    )
+
+    resultado = cursor.fetchall()
+    return resultado
 
 
 

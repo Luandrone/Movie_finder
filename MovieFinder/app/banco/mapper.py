@@ -3,6 +3,7 @@ from app.filme import Filme
 
 def mapear_filme(linha):
     filme = Filme(linha[2], str(linha[3]), float(linha[4]), linha[1])
+    filme.id_banco = linha[0]
     filme.sinopse = linha[5]
     filme.duracao = linha[6]
 
@@ -18,3 +19,8 @@ def mapear_disponibilidade(linha):
     disponibilidade['link'] = linha[6]
 
     return disponibilidade
+
+def mapear_genero(linha):
+    genero = {'tmdb_id': linha[0], 'nome': linha[1]}
+
+    return genero

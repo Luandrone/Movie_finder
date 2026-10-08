@@ -7,13 +7,14 @@ def mostrar_resultado(lista_de_filmes):
         print(f'{indice + 1} - {filme.titulo}')
 
 def mostrar_filme(filme):
+    generos = ', '.join(genero['nome'] for genero in filme.generos)
     print(
         f'Filme: {filme.titulo}\n'
         f'Ano: {filme.ano}\n'
         f'Nota: {filme.nota}\n'
         f'Duração: {filme.duracao}\n'
         f'Sinopse: {filme.sinopse}\n'
-        f'Gênero: {', '.join(filme.generos)}\n')
+        f'Gênero: {generos}\n')
 
     mostrar_disponibilidade(filme)
 

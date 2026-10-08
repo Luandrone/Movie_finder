@@ -71,7 +71,8 @@ def buscar_detalhes(filme):
     filme.poster = dados['poster_path']
 
     for genero in dados['genres']:
-        filme.generos.append(genero['name'])
+        id_e_genero = {'tmdb_id': genero['id'], 'nome': genero['name']}
+        filme.generos.append(id_e_genero)
 
 def buscar_disponibilidade(filme):
 
