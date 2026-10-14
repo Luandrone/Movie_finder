@@ -103,3 +103,38 @@ def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
         'atualizadas': atualizadas,
         'excluidas': excluidas
 }
+
+def comparar_generos(generos_api, generos_banco):
+    ids_generos_api = set()
+    ids_generos_banco = set()
+
+    for genero in generos_api:
+        ids_generos_api.add(genero['tmdb_id'])
+
+    for genero in generos_banco:
+        ids_generos_banco.add(genero['tmdb_id'])
+
+    ids_generos_novos = ids_generos_api - ids_generos_banco
+    ids_generos_excluidos = ids_generos_banco - ids_generos_api
+
+    generos_novos = []
+    generos_excluidos = []
+
+    for genero in generos_api:
+        if genero['tmdb_id'] in ids_generos_novos:
+            generos_novos.append(genero)
+
+    for genero in generos_banco:
+        if genero['tmdb_id'] in ids_generos_excluidos:
+            generos_excluidos.append(genero)
+
+    return {
+        'novos': generos_novos,
+        'excluidos': generos_excluidos
+    }
+
+
+
+
+
+

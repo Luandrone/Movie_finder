@@ -1,8 +1,8 @@
-from app.banco.comparador import comparar_filmes, comparar_disponibilidades
+from app.banco.comparador import comparar_filmes, comparar_disponibilidades, comparar_generos
 from app.banco.conexao import obter_conexao
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
     buscar_disponibilidades_filme, sincronizar_disponibilidades, buscar_genero_por_tmdb_id, inserir_genero, \
-    inserir_filme_genero, buscar_generos_filme
+    inserir_filme_genero, buscar_generos_filme, excluir_generos_filme
 from app.banco.mapper import mapear_filme, mapear_disponibilidade, mapear_genero
 
 
@@ -52,6 +52,14 @@ def salvar_filme(filme):
         filme_banco = mapear_filme(filme_existente)
         resultado = comparar_filmes(filme, filme_banco)
 
+        linhas = buscar_generos_filme(cursor, filme_banco.id_banco)
+        generos_banco = []
+
+        for linha in linhas:
+            generos_banco.append(mapear_genero(linha))
+
+        resultado_generos = comparar_generos(filme.generos, generos_banco)
+
         disponibilidade_banco = buscar_disponibilidades_filme(cursor, filme.id)
 
         lista_disponibilidades = []
@@ -62,8 +70,22 @@ def salvar_filme(filme):
 
         resultado_disponibilidades = comparar_disponibilidades(filme.disponibilidade, lista_disponibilidades)
 
-        if not resultado and not any(resultado_disponibilidades.values()):
+        if not resultado and not any(resultado_disponibilidades.values()) and not any(resultado_generos.values()):
             return {'status': 'já_existe'}
+
+        for genero in resultado_generos['excluidos']:
+            genero_atual = buscar_genero_por_tmdb_id(cursor, genero['tmdb_id'])
+            excluir_generos_filme(cursor, filme_banco.id_banco, genero_atual[0])
+
+        for genero in resultado_generos['novos']:
+            genero_atual = buscar_genero_por_tmdb_id(cursor, genero['tmdb_id'])
+
+            if genero_atual is None:
+                genero_id = inserir_genero(cursor, genero)
+            else:
+                genero_id = genero_atual[0]
+
+            inserir_filme_genero(cursor, filme_banco.id_banco, genero_id)
 
         if resultado:
             atualizar_filme(cursor, filme.id, resultado)

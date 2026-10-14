@@ -143,6 +143,11 @@ def buscar_generos_filme(cursor, filme_id):
     resultado = cursor.fetchall()
     return resultado
 
+def excluir_generos_filme(cursor, filme_id, genero_id):
+    cursor.execute(
+        'DELETE FROM tblFilmeGeneros WHERE filme_id = %s AND genero_id = %s;', (filme_id, genero_id)
+    )
+
 
 
 
