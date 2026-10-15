@@ -1,3 +1,4 @@
+# Coordena consultas, comparações e transações para salvar e carregar filmes.
 from app.banco.comparador import comparar_filmes, comparar_disponibilidades, comparar_generos
 from app.banco.conexao import obter_conexao
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
@@ -7,6 +8,7 @@ from app.banco.mapper import mapear_filme, mapear_disponibilidade, mapear_genero
 
 
 def buscar_filmes_banco():
+    # Carrega os filmes salvos e mapeia cada registro para Filme.
     conn = obter_conexao()
     try:
         cursor = conn.cursor()
@@ -23,6 +25,7 @@ def buscar_filmes_banco():
 
 
 def salvar_filme(filme):
+    # Insere ou sincroniza filme, gêneros e provedores em uma única transação.
     conn = obter_conexao()
 
     try:
@@ -107,6 +110,7 @@ def salvar_filme(filme):
         conn.close()
 
 def buscar_disponibilidades_do_filme_no_banco(filme):
+    # Carrega provedores persistidos para exibir um filme salvo.
     conn = obter_conexao()
 
     try:
@@ -129,6 +133,7 @@ def buscar_disponibilidades_do_filme_no_banco(filme):
     return lista_disponibilidades
 
 def salvar_generos_filme(cursor, filme, filme_id):
+    # Garante o cadastro de cada gênero e cria as relações com o filme.
     for genero in filme.generos:
         genero_banco = buscar_genero_por_tmdb_id(cursor, genero['tmdb_id'])
         if genero_banco is None:
@@ -139,6 +144,7 @@ def salvar_generos_filme(cursor, filme, filme_id):
         inserir_filme_genero(cursor, filme_id, genero_id)
 
 def buscar_generos_do_filme_no_banco(filme):
+    # Carrega os gêneros ligados ao ID interno do filme.
     conn = obter_conexao()
 
     try:

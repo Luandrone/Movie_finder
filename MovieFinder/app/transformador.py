@@ -1,7 +1,9 @@
+# Adapta respostas JSON do TMDB para as estruturas internas da aplicação.
 from app.filme import Filme
 
 
 def transformar_filmes(dados):
+    # Converte resultados resumidos da busca em objetos Filme.
     lista_filmes = []
     for filme in dados['results']:
         data = (filme['release_date'] or '').strip()
@@ -15,6 +17,7 @@ def transformar_filmes(dados):
 
 
 def transformar_disponibilidade(provedor, tipo, link):
+    # Padroniza um provedor no formato usado pelo domínio e pelo banco.
     dados_transformados = {
         'provider_id': provedor['provider_id'],
         'provider_name': provedor['provider_name'],
@@ -26,6 +29,7 @@ def transformar_disponibilidade(provedor, tipo, link):
     return dados_transformados
 
 def organizar_disponibilidades(dados_brasil):
+    # Achata as listas regionais em registros individuais por tipo de oferta.
     lista_disponibilidades = []
 
     for tipo in ['buy', 'rent', 'flatrate']:

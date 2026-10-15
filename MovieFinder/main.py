@@ -1,3 +1,4 @@
+# Ponto de entrada: mantém o menu ativo e encaminha as opções aos casos de uso.
 from app.serviço import exibir_filmes_do_banco
 from app.menu import mostrar_menu
 from app.serviço import buscar_e_mostrar_filme

@@ -1,5 +1,7 @@
+# Reúne consultas SQL de baixo nível; a coordenação das regras fica no repositório.
 
 def buscar_todos_filmes(cursor):
+    # Lista os filmes persistidos.
     cursor.execute(
         'SELECT * FROM tblFilmes;'
     )
@@ -7,12 +9,14 @@ def buscar_todos_filmes(cursor):
     return resultado
 
 def buscar_por_tmdb_id(cursor, tmdb_id):
+    # Procura pelo identificador estável fornecido pelo TMDB.
 
     cursor.execute('SELECT * FROM tblFilmes WHERE tmdb_id = %s;', (tmdb_id,))
     resultado = cursor.fetchone()
     return resultado
 
 def inserir_filme(cursor, filme):
+    # Insere os dados principais e retorna o ID interno do banco.
     cursor.execute(
         'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
         'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;',
@@ -30,6 +34,7 @@ def inserir_filme(cursor, filme):
     return resultado[0]
 
 def atualizar_filme(cursor, filme_id, resultado):
+    # Atualiza somente os campos apontados pelo comparador.
     campos_alterados = []
     valores_novos = []
 
@@ -99,6 +104,7 @@ def excluir_disponibilidade(cursor, tmdb_id, provider_id, tipo):
     cursor.execute(sql_delete, (tmdb_id, provider_id, tipo))
 
 def sincronizar_disponibilidades(cursor, filme, resultado):
+    # Aplica ao banco as inclusões, alterações e remoções de provedores.
 
     for nova in resultado['novas']:
         inserir_disponibilidade(cursor, filme, nova)
@@ -133,6 +139,7 @@ def inserir_filme_genero(cursor, filme_id, genero_id):
     )
 
 def buscar_generos_filme(cursor, filme_id):
+    # Lê os gêneros relacionados ao ID interno do filme.
     cursor.execute(
         'SELECT g.tmdb_id, g.nome '
         'FROM tblFilmeGeneros fg '

@@ -1,3 +1,4 @@
+# Centraliza endpoints e cabeçalho usados nas chamadas à API TMDB.
 from os import getenv
 from dotenv import load_dotenv
 BASE_URL = "https://api.themoviedb.org/3/"

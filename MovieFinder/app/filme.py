@@ -1,3 +1,4 @@
+# Modelo de domínio que reúne dados do filme e suas relações.
 class Filme:
     def __init__(self, titulo='', ano=0, nota=0.0, id=0, sinopse='', duracao='', poster='', generos=None, disponibilidade=None):
         if generos is None:

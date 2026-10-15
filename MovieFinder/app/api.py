@@ -1,3 +1,4 @@
+# Integra a aplicação com o TMDB: busca, detalhes e disponibilidade.
 from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT, headers, MOVIE_DETAILS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
@@ -6,6 +7,7 @@ from app.transformador import transformar_filmes, organizar_disponibilidades
 
 
 def fazer_requisicao(url,cabecalho, parametros=None):
+    # Centraliza chamadas HTTP e converte falhas de conexão/HTTP em ErroApi.
     try:
         response = requests.get(url, params=parametros, headers=cabecalho)
         response.raise_for_status()
@@ -19,6 +21,7 @@ def fazer_requisicao(url,cabecalho, parametros=None):
 
 # irá realizar a busca de um filme
 def buscar_filme(nome_filme):
+    # Pesquisa títulos no TMDB e transforma a resposta resumida em objetos Filme.
     """
     Responsabilidade:
         Pesquisar um filme na API TMDB.
@@ -54,6 +57,7 @@ def buscar_filme(nome_filme):
     return lista_filmes
 
 def buscar_detalhes(filme):
+    # Completa o filme selecionado com sinopse, duração, pôster e gêneros.
     parametros = {
         "language": "pt-BR",
     }
@@ -75,6 +79,7 @@ def buscar_detalhes(filme):
         filme.generos.append(id_e_genero)
 
 def buscar_disponibilidade(filme):
+    # Carrega provedores disponíveis no Brasil e normaliza as ofertas.
 
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}{MOVIE_PROVIDERS_ENDPOINT}',headers)
 

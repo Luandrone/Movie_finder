@@ -1,3 +1,4 @@
+# Casos de uso que conectam entrada, API, persistência e apresentação.
 from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
 from app.menu import selecionar_filme
@@ -7,6 +8,7 @@ from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disp
 
 
 def buscar_e_mostrar_filme():
+    # Fluxo de busca: procurar, selecionar, completar, salvar e exibir um filme.
 
     nome_do_filme = input('Digite o nome do filme: ')
     try:
@@ -47,6 +49,7 @@ def buscar_e_mostrar_filme():
         return
 
 def exibir_filmes_do_banco():
+    # Fluxo local: carrega o filme salvo e suas relações para exibição.
 
     filmes = buscar_filmes_banco()
 

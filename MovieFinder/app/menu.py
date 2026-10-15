@@ -1,4 +1,6 @@
+# Lê e valida as escolhas interativas feitas no terminal.
 def mostrar_menu():
+    # Exibe as ações e retorna somente uma opção válida.
     print('=' * 25)
     print('MOVIEFINDER'.center(25))
     print('=' * 25)
@@ -24,6 +26,7 @@ def mostrar_menu():
 
 
 def selecionar_filme(lista_de_filmes):
+    # Lê a posição escolhida e devolve o Filme correspondente.
     while True:
         try:
             numero_filme = int(input('Digite o numero do filme: '))

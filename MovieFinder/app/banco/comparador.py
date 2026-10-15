@@ -1,4 +1,6 @@
+# Compara os dados atuais da API com os registros persistidos para detectar mudanças.
 def comparar_filmes(filme, filme_banco):
+    # Retorna os campos do filme que mudaram, incluindo valores anterior e novo.
     alteracoes = []
     if filme.titulo != filme_banco.titulo:
         alteracoes.append(
@@ -47,6 +49,7 @@ def comparar_filmes(filme, filme_banco):
 
 
 def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
+    # Classifica provedores pela combinação de ID e tipo: novos, alterados ou removidos.
     novas = []
     excluidas = []
     atualizadas = []
@@ -105,6 +108,7 @@ def comparar_disponibilidades(disponibilidades_api, disponibilidades_banco):
 }
 
 def comparar_generos(generos_api, generos_banco):
+    # Compara gêneros pela identificação do TMDB e encontra inclusões e remoções.
     ids_generos_api = set()
     ids_generos_banco = set()
 

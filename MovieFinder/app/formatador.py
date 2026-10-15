@@ -1,12 +1,15 @@
+# Apresenta listas, detalhes e provedores no terminal.
 
 
 
 def mostrar_resultado(lista_de_filmes):
+    # Mostra a lista numerada que será usada na seleção interativa.
     print('RESULTADO')
     for indice,filme in enumerate(lista_de_filmes):
         print(f'{indice + 1} - {filme.titulo}')
 
 def mostrar_filme(filme):
+    # Exibe os dados principais e encaminha a seção de disponibilidade.
     generos = ', '.join(genero['nome'] for genero in filme.generos)
     print(
         f'Filme: {filme.titulo}\n'
@@ -19,6 +22,7 @@ def mostrar_filme(filme):
     mostrar_disponibilidade(filme)
 
 def mostrar_disponibilidade(filme):
+    # Agrupa provedores por compra, aluguel ou assinatura antes de imprimir.
 
     encontrou_categoria = False
     comprar = []
