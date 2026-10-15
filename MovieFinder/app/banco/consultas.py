@@ -155,7 +155,20 @@ def excluir_generos_filme(cursor, filme_id, genero_id):
         'DELETE FROM tblFilmeGeneros WHERE filme_id = %s AND genero_id = %s;', (filme_id, genero_id)
     )
 
+def excluir_disponibilidades_do_filme(cursor, tmdb_id):
+    cursor.execute(
+        'DELETE FROM tblDisponibilidade WHERE tmdb_id = %s;', (tmdb_id,)
+    )
 
+def excluir_associacoes_generos_do_filme(cursor, filme_id):
+    cursor.execute(
+        'DELETE FROM tblFilmeGeneros WHERE filme_id = %s;', (filme_id,)
+    )
+
+def excluir_filme_por_id(cursor, filme_id):
+    cursor.execute(
+        'DELETE FROM tblFilmes WHERE id = %s;', (filme_id,)
+    )
 
 
 

@@ -1,5 +1,5 @@
 # Ponto de entrada: mantém o menu ativo e encaminha as opções aos casos de uso.
-from app.serviço import exibir_filmes_do_banco
+from app.serviço import exibir_filmes_do_banco, excluir_filme_salvo
 from app.menu import mostrar_menu
 from app.serviço import buscar_e_mostrar_filme
 
@@ -14,6 +14,9 @@ while True:
         exibir_filmes_do_banco()
 
     elif opcao == 3:
+        excluir_filme_salvo()
+
+    elif opcao == 4:
         break
 
 

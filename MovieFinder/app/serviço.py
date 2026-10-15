@@ -4,7 +4,7 @@ from app.formatador import mostrar_resultado, mostrar_filme
 from app.menu import selecionar_filme
 from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
-    buscar_generos_do_filme_no_banco
+    buscar_generos_do_filme_no_banco, excluir_filme_banco
 
 
 def buscar_e_mostrar_filme():
@@ -62,5 +62,21 @@ def exibir_filmes_do_banco():
     else:
         print('Não existe nenhum filme salvo atualmente')
 
+def excluir_filme_salvo():
+    filmes = buscar_filmes_banco()
 
+    if not filmes:
+        print('Não existe nenhum filme salvo atualmente')
+        return
 
+    mostrar_resultado(filmes)
+    filme = selecionar_filme(filmes)
+
+    confirmacao = input(f'Você deseja excluir "{filme.titulo}"? (S/N): ').strip().lower()
+
+    if confirmacao != 's':
+        print('A exclusão foi cancelada!')
+        return
+    else:
+        excluir_filme_banco(filme)
+        print('Filme excluído com sucesso!')

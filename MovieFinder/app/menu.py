@@ -6,14 +6,15 @@ def mostrar_menu():
     print('=' * 25)
     print('1 - Buscar filme')
     print('2 - Filmes salvos')
-    print('3 - Sair')
+    print('3 - Excluir filme salvo')
+    print('4 - Sair')
     print('=' * 25)
     while True:
         try:
 
             opcao = int(input('Escolha uma opção: '))
 
-            if opcao in (1, 2, 3):
+            if opcao in (1, 2, 3, 4):
                 return opcao
 
             else:
