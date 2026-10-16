@@ -24,15 +24,23 @@ def buscar_e_mostrar_filme():
 
             buscar_disponibilidade(filme)
 
+            mostrar_filme(filme)
+
+            resposta = input('Deseja salvar o filme ? (S/N): ').strip().lower()
+
+            if resposta != 's':
+                print('Filme não foi salvo.')
+                return
+
+
             resultado = salvar_filme(filme)
+
             if resultado['status'] == 'atualizado':
                 print(f'Filme atualizado no banco com sucesso!')
             elif resultado['status'] == 'já_existe':
                 print('Não houve mudança no banco!')
             elif resultado['status'] == 'novo':
                 print('Filme salvo no banco com sucesso!')
-
-            mostrar_filme(filme)
 
         else:
             print('Nenhum filme encontrado!')
