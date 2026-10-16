@@ -1,6 +1,19 @@
 # Modelo de domínio que reúne dados do filme e suas relações.
 class Filme:
-    def __init__(self, titulo='', ano=0, nota=0.0, id=0, sinopse='', duracao='', poster='', generos=None, disponibilidade=None):
+    def __init__ \
+                    (
+                    self,
+                    titulo='',
+                    ano=0,
+                    nota=0.0,
+                    id=0,
+                    sinopse='',
+                    duracao='',
+                    poster='',
+                    generos=None,
+                    disponibilidade=None,
+                    favorito = False
+            ):
         if generos is None:
             generos = []
         if disponibilidade is None:
@@ -14,7 +27,7 @@ class Filme:
         self.poster = poster
         self.generos = generos
         self.disponibilidade = disponibilidade
-
+        self.favorito = favorito
 
     def __str__(self):
         return (f'Filme: '
@@ -27,5 +40,3 @@ class Filme:
                 f'{self.poster}\ngeneros: '
                 f'{self.generos}\n'
                 f'disponibilidade: {self.disponibilidade}')
-
-

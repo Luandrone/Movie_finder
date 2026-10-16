@@ -4,7 +4,7 @@ from app.formatador import mostrar_resultado, mostrar_filme
 from app.menu import selecionar_filme
 from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
-    buscar_generos_do_filme_no_banco, excluir_filme_banco
+    buscar_generos_do_filme_no_banco, excluir_filme_banco, atualizar_favorito_banco, buscar_filmes_favoritos_banco
 
 
 def buscar_e_mostrar_filme():
@@ -88,3 +88,46 @@ def excluir_filme_salvo():
     else:
         excluir_filme_banco(filme)
         print('Filme excluído com sucesso!')
+
+def gerenciar_favoritos():
+    filmes = buscar_filmes_banco()
+
+    if not filmes:
+        print('Não existem filmes salvos para gerenciar.')
+        return
+
+    mostrar_resultado(filmes)
+    filme = selecionar_filme(filmes)
+
+    if filme.favorito:
+        print(f'O filme {filme.titulo} já está adicionado aos favoritos.')
+        confirmacao = input('Você deseja remover esse filme dos favoritos ? (S/N): ').strip().lower()
+
+    else:
+        print(f'O filme {filme.titulo} ainda não está nos favoritos.')
+        confirmacao = input('Você gostaria de adicionar esse filme aos favoritos ? (S/N): ').strip().lower()
+
+    if confirmacao != 's':
+        print('O filme não foi alterado.')
+        return
+
+    atualizar_favorito_banco(filme, not filme.favorito)
+
+    if filme.favorito:
+        print('Filme foi adicionado aos favoritos com sucesso!')
+
+    else:
+        print('Filme foi removido dos favoritos com sucesso!')
+
+
+def exibir_filmes_favoritos():
+    filmes = buscar_filmes_favoritos_banco()
+
+    if filmes:
+        mostrar_resultado(filmes)
+        filme = selecionar_filme(filmes)
+        filme.disponibilidade = buscar_disponibilidades_do_filme_no_banco(filme)
+        filme.generos = buscar_generos_do_filme_no_banco(filme)
+        mostrar_filme(filme)
+    else:
+        print('Não existe nenhum filme favorito no momento.')

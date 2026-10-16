@@ -7,14 +7,16 @@ def mostrar_menu():
     print('1 - Buscar filme')
     print('2 - Filmes salvos')
     print('3 - Excluir filme salvo')
-    print('4 - Sair')
+    print('4 - Gerenciar favoritos')
+    print('5 - Exibir filmes favoritos')
+    print('6 - Sair')
     print('=' * 25)
     while True:
         try:
 
             opcao = int(input('Escolha uma opção: '))
 
-            if opcao in (1, 2, 3, 4):
+            if opcao in (1, 2, 3, 4, 5, 6):
                 return opcao
 
             else:

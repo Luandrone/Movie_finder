@@ -4,8 +4,9 @@ from app.banco.conexao import obter_conexao
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
     buscar_disponibilidades_filme, sincronizar_disponibilidades, buscar_genero_por_tmdb_id, inserir_genero, \
     inserir_filme_genero, buscar_generos_filme, excluir_generos_filme, excluir_disponibilidade, \
-    excluir_disponibilidades_do_filme, excluir_associacoes_generos_do_filme, excluir_filme_por_id
+    excluir_disponibilidades_do_filme, excluir_associacoes_generos_do_filme, excluir_filme_por_id, atualizar_favorito, buscar_filmes_favoritos
 from app.banco.mapper import mapear_filme, mapear_disponibilidade, mapear_genero
+from teste_postgres import cursor
 
 
 def buscar_filmes_banco():
@@ -185,3 +186,39 @@ def excluir_filme_banco(filme):
 
     finally:
         conn.close()
+
+def atualizar_favorito_banco(filme,favorito):
+    conn = obter_conexao()
+    try:
+        cursor = conn.cursor()
+        atualizar_favorito(cursor, filme.id_banco, favorito)
+        conn.commit()
+        filme.favorito = favorito
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+def buscar_filmes_favoritos_banco():
+    conn = obter_conexao()
+
+    try:
+        cursor = conn.cursor()
+
+        resultado = buscar_filmes_favoritos(cursor)
+        lista_filmes = []
+        for linha in resultado:
+            filme = mapear_filme(linha)
+            lista_filmes.append(filme)
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+    return lista_filmes

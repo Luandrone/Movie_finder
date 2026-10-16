@@ -4,10 +4,11 @@ from app.filme import Filme
 
 def mapear_filme(linha):
     # Converte uma linha de tblFilmes em Filme e preserva a chave interna.
-    filme = Filme(linha[2], str(linha[3]), float(linha[4]), linha[1])
+    filme = Filme(linha[2], str(linha[3]), float(linha[4]), linha[1], favorito = linha[7])
     filme.id_banco = linha[0]
     filme.sinopse = linha[5]
     filme.duracao = linha[6]
+
 
     return filme
 

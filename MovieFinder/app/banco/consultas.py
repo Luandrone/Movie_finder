@@ -170,9 +170,16 @@ def excluir_filme_por_id(cursor, filme_id):
         'DELETE FROM tblFilmes WHERE id = %s;', (filme_id,)
     )
 
+def atualizar_favorito(cursor, filme_id, favorito):
+    cursor.execute(
+        'UPDATE tblFilmes SET favorito = %s WHERE id = %s;', (favorito, filme_id)
+    )
 
+def buscar_filmes_favoritos(cursor):
+    cursor.execute(
+        'SELECT * FROM tblFilmes WHERE favorito = TRUE;'
+    )
 
+    resultado = cursor.fetchall()
 
-
-
-
+    return resultado
