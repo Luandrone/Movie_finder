@@ -34,8 +34,10 @@ def test_buscar_detalhes(mock_detalhes):
                     'runtime':210,
                     'poster_path':'blablabla',
                     'genres':[
-                        {'name': 'Crime'},
-                        {'name': 'Thriller'}]}
+                        {'id': 80, 'name': 'Crime'},
+                        {'id': 53, 'name': 'Thriller'}
+                    ]
+                    }
 
     mock_response = Mock()
     mock_response.json.return_value = dados_falsos
@@ -46,7 +48,10 @@ def test_buscar_detalhes(mock_detalhes):
     assert filme1.sinopse == 'blablabla'
     assert filme1.duracao == 210
     assert filme1.poster == 'blablabla'
-    assert filme1.generos == ['Crime', 'Thriller']
+    assert filme1.generos == [
+        {'tmdb_id': 80, 'nome': 'Crime'},
+        {'tmdb_id': 53, 'nome': 'Thriller'}
+    ]
 
     parametros = {
         'language': 'pt-BR'

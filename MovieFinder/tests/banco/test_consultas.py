@@ -65,13 +65,14 @@ def test_buscar_por_tmdb_id_nao_encontrado():
 
 def test_inserir_filme():
     mock_cursor = Mock()
+    mock_cursor.fetchone.return_value = (1,)
     filme_falso = Filme('Batman', 2020, 7.0, 123, 'blabla', 150)
 
     inserir_filme(mock_cursor, filme_falso)
 
     mock_cursor.execute.assert_called_once_with(
         'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
-        'VALUES (%s, %s, %s, %s, %s, %s);',
+        'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;',
         (
             filme_falso.id,
             filme_falso.titulo,

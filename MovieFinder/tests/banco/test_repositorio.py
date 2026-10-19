@@ -2,10 +2,11 @@ from unittest.mock import patch, Mock, call
 from decimal import Decimal
 
 import pytest
+from psycopg.types import none
 
 from app.banco.repositorio import buscar_filmes_banco, salvar_filme
 from app.filme import Filme
-from teste_postgres import resultado
+
 
 
 @patch('app.banco.repositorio.obter_conexao')
@@ -17,7 +18,8 @@ def test_buscar_filmes_banco(mock_obter_conexao):
         2021,
         Decimal('8.0'),
         'blabla',
-        210
+        210,
+        False,
     )
     mock_cursor = Mock()
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
@@ -64,16 +66,16 @@ def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
 
 @patch('app.banco.repositorio.obter_conexao')
 def test_salvar_filme_novo(mock_obter_conexao):
-    filme_falso = Filme('Batman', '2020', 7.0, 212)
+    filme_falso = Filme('Batman', '2020', 7.0, 212, )
     mock_cursor = Mock()
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
-    mock_cursor.fetchone.return_value = None
+    mock_cursor.fetchone.side_effect = [None, (1,)]
     resultado = salvar_filme(filme_falso)
 
     assert resultado == {'status': 'novo'}
     assert mock_cursor.execute.call_args_list[1] == call(
         'INSERT INTO tblFilmes (tmdb_id, titulo, ano, nota, sinopse, duracao)'
-        'VALUES (%s, %s, %s, %s, %s, %s);',
+        'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;',
         (212, 'Batman', '2020', 7.0, '', '')
     )
 
@@ -91,7 +93,8 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
         2020,
         7.0,
         '',
-        ''
+        '',
+        False
     )
     mock_obter_conexao.return_value.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = linha_do_banco_existente
@@ -100,7 +103,7 @@ def test_salvar_filme_ja_existente(mock_obter_conexao):
     resultado = salvar_filme(filme_falso_existente)
 
     assert resultado == {'status': 'já_existe'}
-    assert len(mock_cursor.execute.call_args_list) == 2
+    assert len(mock_cursor.execute.call_args_list) == 3
     mock_obter_conexao.return_value.close.assert_called_once_with()
 
 
@@ -114,7 +117,8 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
         2020,
         7.0,
         'blabla',
-        150
+        150,
+        False
     )
     mock_cursor = Mock()
 
@@ -150,7 +154,7 @@ def test_salvar_filme_atualizar_multiplos_campos(mock_obter_conexao):
         ]
     }
 
-    assert mock_cursor.execute.call_args_list[2] == call(
+    mock_cursor.execute.assert_any_call(
         'UPDATE tblFilmes SET titulo = %s, ano = %s, nota = %s, duracao = %s WHERE tmdb_id = %s;',
         ['The Batman', '2022', 8.0, 176, 212]
     )
@@ -180,7 +184,8 @@ def test_salvar_filme_somente_disponibilidade_nova(mock_obter_conexao):
         '2020',
         7.0,
         '',
-        ''
+        '',
+        False
     )
     mock_cursor.fetchall.return_value = []
     with    patch('app.banco.repositorio.sincronizar_disponibilidades') as mock_sincronizar, \
@@ -229,7 +234,8 @@ def test_salvar_filme_somente_disponibilidade_atualizada(mock_obter_conexao):
         '2020',
         7.0,
         '',
-        ''
+        '',
+        False
     )
     mock_cursor.fetchall.return_value = [
         (
@@ -294,7 +300,8 @@ def test_salvar_filme_somente_disponibilidade_excluida(mock_obter_conexao):
         '2020',
         7.0,
         '',
-        ''
+        '',
+        False
     )
     mock_cursor.fetchall.return_value = [
         (

@@ -11,7 +11,8 @@ def test_mapear_filme():
         2021,
         Decimal('8.0'),
         'blabla',
-        210
+        210,
+        False
     )
 
     filme = mapear_filme(linha_falsa)
@@ -22,6 +23,7 @@ def test_mapear_filme():
     assert filme.nota == 8.0
     assert filme.sinopse == 'blabla'
     assert filme.duracao == 210
+    assert filme.favorito == False
 
 def test_mapear_disponibilidade():
     linha_falsa = (

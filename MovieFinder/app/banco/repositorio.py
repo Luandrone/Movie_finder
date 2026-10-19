@@ -6,8 +6,6 @@ from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_fil
     inserir_filme_genero, buscar_generos_filme, excluir_generos_filme, excluir_disponibilidade, \
     excluir_disponibilidades_do_filme, excluir_associacoes_generos_do_filme, excluir_filme_por_id, atualizar_favorito, buscar_filmes_favoritos
 from app.banco.mapper import mapear_filme, mapear_disponibilidade, mapear_genero
-from teste_postgres import cursor
-
 
 def buscar_filmes_banco():
     # Carrega os filmes salvos e mapeia cada registro para Filme.
