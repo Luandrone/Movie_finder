@@ -29,22 +29,19 @@ def buscar_e_mostrar_filme():
     try:
         lista_de_filmes = buscar_filme(nome_do_filme)
 
-        if lista_de_filmes:
-
-            mostrar_resultado(lista_de_filmes)
-
-            filme = selecionar_filme(lista_de_filmes)
-
-            buscar_detalhes(filme)
-
-            buscar_disponibilidade(filme)
-
-            mostrar_filme(filme)
-
-            _salvar_filme_se_confirmado(filme)
-
-        else:
+        if not lista_de_filmes:
             print('Nenhum filme encontrado!')
+            return
+
+        mostrar_resultado(lista_de_filmes)
+        filme = selecionar_filme(lista_de_filmes)
+
+        buscar_detalhes(filme)
+        buscar_disponibilidade(filme)
+        mostrar_filme(filme)
+
+        _salvar_filme_se_confirmado(filme)
+
 
     except ErroApi as erro:
         if erro.tipo == 'Problema de conexão':
