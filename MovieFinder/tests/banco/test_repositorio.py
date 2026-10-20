@@ -2,7 +2,6 @@ from unittest.mock import patch, Mock, call
 from decimal import Decimal
 
 import pytest
-from psycopg.types import none
 
 from app.banco.repositorio import buscar_filmes_banco, salvar_filme
 from app.filme import Filme

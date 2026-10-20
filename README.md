@@ -24,7 +24,7 @@ Aplicação desenvolvida em Python que utiliza a API do TMDB para pesquisar film
 
 O projeto utiliza uma chave da API do TMDB armazenada em uma variável de ambiente.
 
-Crie um arquivo `.env`:
+Crie um arquivo `MovieFinder/.env`:
 
 ``env
 API_KEY=sua_chave_da_api
