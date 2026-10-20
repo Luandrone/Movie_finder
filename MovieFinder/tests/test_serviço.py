@@ -1,7 +1,8 @@
 from app.excecoes import ErroApi
 from app.filme import Filme
-from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo
+from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado
 from unittest.mock import patch, Mock
+import pytest
 
 @patch('app.serviço.buscar_filme')
 @patch('builtins.input', side_effect=['The Batman', 's'])
@@ -123,3 +124,38 @@ def test_completar_dados_filme_salvo():
     assert resultado is filme
     assert filme.disponibilidade == disponibilidades
     assert filme.generos == generos
+
+@pytest.mark.parametrize(
+    ("status", "mensagem"),
+    [
+        ("atualizado", "Filme atualizado no banco com sucesso!"),
+        ("já_existe", "Não houve mudança no banco!"),
+        ("novo", "Filme salvo no banco com sucesso!"),
+    ],
+)
+def test_salvar_filme_se_confirmado_exibe_mensagem(
+    status, mensagem, capsys
+):
+    filme = Filme("The Batman", 2022)
+
+    with patch("builtins.input", return_value="s"), patch(
+        "app.serviço.salvar_filme",
+        return_value={"status": status}
+    ) as salvar:
+
+        _salvar_filme_se_confirmado(filme)
+
+    salvar.assert_called_once_with(filme)
+    assert mensagem in capsys.readouterr().out
+
+def test_nao_salvar_filme_se_nao_confirmado(capsys):
+    filme = Filme("The Batman", 2022)
+
+    with patch("builtins.input", return_value="n"), patch(
+        "app.serviço.salvar_filme"
+    ) as salvar:
+
+        _salvar_filme_se_confirmado(filme)
+
+    salvar.assert_not_called()
+    assert "Filme não foi salvo." in capsys.readouterr().out

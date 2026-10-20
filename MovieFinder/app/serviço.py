@@ -6,6 +6,21 @@ from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
     buscar_generos_do_filme_no_banco, excluir_filme_banco, atualizar_favorito_banco, buscar_filmes_favoritos_banco
 
+def _salvar_filme_se_confirmado(filme):
+    resposta = input('Deseja salvar o filme ? (S/N): ').strip().lower()
+
+    if resposta != 's':
+        print('Filme não foi salvo.')
+        return
+
+    resultado = salvar_filme(filme)
+
+    if resultado['status'] == 'atualizado':
+        print('Filme atualizado no banco com sucesso!')
+    elif resultado['status'] == 'já_existe':
+        print('Não houve mudança no banco!')
+    elif resultado['status'] == 'novo':
+        print('Filme salvo no banco com sucesso!')
 
 def buscar_e_mostrar_filme():
     # Fluxo de busca: procurar, selecionar, completar, salvar e exibir um filme.
@@ -26,21 +41,7 @@ def buscar_e_mostrar_filme():
 
             mostrar_filme(filme)
 
-            resposta = input('Deseja salvar o filme ? (S/N): ').strip().lower()
-
-            if resposta != 's':
-                print('Filme não foi salvo.')
-                return
-
-
-            resultado = salvar_filme(filme)
-
-            if resultado['status'] == 'atualizado':
-                print(f'Filme atualizado no banco com sucesso!')
-            elif resultado['status'] == 'já_existe':
-                print('Não houve mudança no banco!')
-            elif resultado['status'] == 'novo':
-                print('Filme salvo no banco com sucesso!')
+            _salvar_filme_se_confirmado(filme)
 
         else:
             print('Nenhum filme encontrado!')
