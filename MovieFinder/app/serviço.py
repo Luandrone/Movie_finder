@@ -44,14 +44,17 @@ def buscar_e_mostrar_filme():
 
 
     except ErroApi as erro:
-        if erro.tipo == 'Problema de conexão':
-            print('Não foi possível conectar à API.')
+        mensagens_erro = {
+            'Problema de conexão': 'Não foi possível conectar à API.',
+            'Problema de Http': 'A API retornou um erro.',
+        }
 
-        elif erro.tipo == 'Problema de Http':
-            print('A API retornou um erro.')
+        mensagem = mensagens_erro.get(
+            erro.tipo,
+            'Algum problema ocorreu!'
+        )
 
-        else:
-            print('Algum problema ocorreu!')
+        print(mensagem)
         return
 
 def _completar_dados_filme_salvo(filme):
