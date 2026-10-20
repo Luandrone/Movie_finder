@@ -1,6 +1,7 @@
 from app.excecoes import ErroApi
 from app.filme import Filme
-from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado
+from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado, \
+    excluir_filme_salvo, gerenciar_favoritos
 from unittest.mock import patch, Mock
 import pytest
 
@@ -159,3 +160,132 @@ def test_nao_salvar_filme_se_nao_confirmado(capsys):
 
     salvar.assert_not_called()
     assert "Filme não foi salvo." in capsys.readouterr().out
+
+def test_cancelar_exclusao_filme(capsys):
+    filme = Filme('The Batman', 2022)
+
+    with patch(
+        'app.serviço.buscar_filmes_banco',
+        return_value=[filme]
+    ), patch(
+        'app.serviço.selecionar_filme',
+        return_value=filme
+    ), patch(
+        'builtins.input',
+        return_value='n'
+    ), patch(
+        'app.serviço.excluir_filme_banco'
+    ) as excluir:
+
+        excluir_filme_salvo()
+
+    excluir.assert_not_called()
+    assert 'A exclusão foi cancelada!' in capsys.readouterr().out
+
+def test_confirmar_exclusao_filme(capsys):
+    filme = Filme('The Batman', 2022)
+
+    with patch(
+        'app.serviço.buscar_filmes_banco',
+        return_value=[filme]
+    ), patch(
+        'app.serviço.mostrar_resultado'
+    ), patch(
+        'app.serviço.selecionar_filme',
+        return_value=filme
+    ), patch(
+        'builtins.input',
+        return_value='s'
+    ), patch(
+        'app.serviço.excluir_filme_banco'
+    ) as excluir:
+
+        excluir_filme_salvo()
+
+    excluir.assert_called_once_with(filme)
+    assert 'Filme excluído com sucesso!' in capsys.readouterr().out
+
+def test_cancelar_alteracao_favorito(capsys):
+    filme = Filme('The Batman', 2022)
+
+    with patch(
+        'app.serviço.buscar_filmes_banco',
+        return_value=[filme]
+    ), patch(
+        'app.serviço.mostrar_resultado'
+    ), patch(
+        'app.serviço.selecionar_filme',
+        return_value=filme
+    ), patch(
+        'builtins.input',
+        return_value='n'
+    ), patch(
+        'app.serviço.atualizar_favorito_banco'
+    ) as atualizar:
+
+        gerenciar_favoritos()
+
+    atualizar.assert_not_called()
+    assert 'O filme não foi alterado.' in capsys.readouterr().out
+
+def test_confirmar_adicao_aos_favoritos(capsys):
+    filme = Filme('The Batman', 2022)
+
+    def simular_atualizacao(filme, favorito):
+        filme.favorito = favorito
+
+    with patch(
+        'app.serviço.buscar_filmes_banco',
+        return_value=[filme]
+    ), patch(
+        'app.serviço.mostrar_resultado'
+    ), patch(
+        'app.serviço.selecionar_filme',
+        return_value=filme
+    ), patch(
+        'builtins.input',
+        return_value='s'
+    ), patch(
+        'app.serviço.atualizar_favorito_banco',
+        side_effect=simular_atualizacao
+    ) as atualizar:
+
+        gerenciar_favoritos()
+
+    atualizar.assert_called_once_with(filme, True)
+    assert filme.favorito is True
+    assert (
+        'Filme foi adicionado aos favoritos com sucesso!'
+        in capsys.readouterr().out
+    )
+
+def test_confirmar_remocao_dos_favoritos(capsys):
+    filme = Filme('The Batman', 2022, favorito=True)
+
+    def simular_atualizacao(filme, favorito):
+        filme.favorito = favorito
+
+    with patch(
+        'app.serviço.buscar_filmes_banco',
+        return_value=[filme]
+    ), patch(
+        'app.serviço.mostrar_resultado'
+    ), patch(
+        'app.serviço.selecionar_filme',
+        return_value=filme
+    ), patch(
+        'builtins.input',
+        return_value='s'
+    ), patch(
+        'app.serviço.atualizar_favorito_banco',
+        side_effect=simular_atualizacao
+    ) as atualizar:
+
+        gerenciar_favoritos()
+
+    atualizar.assert_called_once_with(filme, False)
+    assert filme.favorito is False
+    assert (
+        'Filme foi removido dos favoritos com sucesso!'
+        in capsys.readouterr().out
+    )
