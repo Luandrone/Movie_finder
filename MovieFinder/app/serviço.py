@@ -62,19 +62,23 @@ def _completar_dados_filme_salvo(filme):
     filme.generos = buscar_generos_do_filme_no_banco(filme)
     return filme
 
+def _exibir_filme_selecionado(filmes):
+    mostrar_resultado(filmes)
+    filme = selecionar_filme(filmes)
+    filme = _completar_dados_filme_salvo(filme)
+    mostrar_filme(filme)
+
 
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.
 
     filmes = buscar_filmes_banco()
 
-    if filmes:
-        mostrar_resultado(filmes)
-        filme = selecionar_filme(filmes)
-        filme = _completar_dados_filme_salvo(filme)
-        mostrar_filme(filme)
-    else:
+    if not filmes:
         print('Não existe nenhum filme salvo atualmente')
+        return
+
+    _exibir_filme_selecionado(filmes)
 
 def excluir_filme_salvo():
     filmes = buscar_filmes_banco()
@@ -129,10 +133,8 @@ def gerenciar_favoritos():
 def exibir_filmes_favoritos():
     filmes = buscar_filmes_favoritos_banco()
 
-    if filmes:
-        mostrar_resultado(filmes)
-        filme = selecionar_filme(filmes)
-        filme = _completar_dados_filme_salvo(filme)
-        mostrar_filme(filme)
-    else:
+    if not filmes:
         print('Não existe nenhum filme favorito no momento.')
+        return
+
+    _exibir_filme_selecionado(filmes)
