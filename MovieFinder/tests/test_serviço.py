@@ -1,6 +1,6 @@
 from app.excecoes import ErroApi
 from app.filme import Filme
-from app.serviço import buscar_e_mostrar_filme
+from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo
 from unittest.mock import patch, Mock
 
 @patch('app.serviço.buscar_filme')
@@ -95,3 +95,31 @@ def test_buscar_filme_outro_erro(mock_input, mock_buscar_filme, capsys):
     capturado = capsys.readouterr()
 
     assert 'Algum problema ocorreu!' in capturado.out
+
+def test_completar_dados_filme_salvo():
+    filme = Filme('The Batman', 2022)
+
+    disponibilidades = [
+        {'tipo': 'flatrate', 'provider_name': 'Netflix'}
+    ]
+    generos = [
+        {'tmdb_id': 80, 'nome': 'Crime'}
+    ]
+
+    with patch(
+        'app.serviço.buscar_disponibilidades_do_filme_no_banco'
+    ) as buscar_disponibilidades, patch(
+        'app.serviço.buscar_generos_do_filme_no_banco'
+    ) as buscar_generos:
+
+        buscar_disponibilidades.return_value = disponibilidades
+        buscar_generos.return_value = generos
+
+        resultado = _completar_dados_filme_salvo(filme)
+
+    buscar_disponibilidades.assert_called_once_with(filme)
+    buscar_generos.assert_called_once_with(filme)
+
+    assert resultado is filme
+    assert filme.disponibilidade == disponibilidades
+    assert filme.generos == generos

@@ -56,6 +56,12 @@ def buscar_e_mostrar_filme():
             print('Algum problema ocorreu!')
         return
 
+def _completar_dados_filme_salvo(filme):
+    filme.disponibilidade = buscar_disponibilidades_do_filme_no_banco(filme)
+    filme.generos = buscar_generos_do_filme_no_banco(filme)
+    return filme
+
+
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.
 
@@ -64,8 +70,7 @@ def exibir_filmes_do_banco():
     if filmes:
         mostrar_resultado(filmes)
         filme = selecionar_filme(filmes)
-        filme.disponibilidade = buscar_disponibilidades_do_filme_no_banco(filme)
-        filme.generos = buscar_generos_do_filme_no_banco(filme)
+        filme = _completar_dados_filme_salvo(filme)
         mostrar_filme(filme)
     else:
         print('Não existe nenhum filme salvo atualmente')
@@ -126,8 +131,7 @@ def exibir_filmes_favoritos():
     if filmes:
         mostrar_resultado(filmes)
         filme = selecionar_filme(filmes)
-        filme.disponibilidade = buscar_disponibilidades_do_filme_no_banco(filme)
-        filme.generos = buscar_generos_do_filme_no_banco(filme)
+        filme = _completar_dados_filme_salvo(filme)
         mostrar_filme(filme)
     else:
         print('Não existe nenhum filme favorito no momento.')
