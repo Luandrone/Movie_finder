@@ -29,3 +29,33 @@ def test_obter_conexao_com_configuracoes_ausentes(
     assert 'DB_PASSWORD' in str(excecao_info.value)
 
     mock_connect.assert_not_called()
+
+@patch('app.banco.conexao.psycopg.connect')
+@patch('app.banco.conexao.load_dotenv')
+def test_obter_conexao_com_configuracoes_validas(
+    mock_load_dotenv,
+    mock_connect,
+    monkeypatch
+):
+    configuracoes = {
+        'DB_HOST': 'localhost',
+        'DB_PORT': '5432',
+        'DB_NAME': 'moviefinder_teste',
+        'DB_USER': 'usuario_teste',
+        'DB_PASSWORD': 'senha_teste'
+    }
+
+    for nome, valor in configuracoes.items():
+        monkeypatch.setenv(nome, valor)
+
+    conexao = obter_conexao()
+
+    mock_load_dotenv.assert_called_once_with()
+    mock_connect.assert_called_once_with(
+        host='localhost',
+        port='5432',
+        dbname='moviefinder_teste',
+        user='usuario_teste',
+        password='senha_teste'
+    )
+    assert conexao is mock_connect.return_value
