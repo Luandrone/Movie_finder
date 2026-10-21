@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
 from app.filme import Filme
-from app.menu import confirmar_exclusao_filme, confirmar_alteracao_favorito, confirmar_salvamento_filme
+from app.menu import confirmar_exclusao_filme, confirmar_alteracao_favorito, confirmar_salvamento_filme, \
+    solicitar_nome_filme
 
 
 @patch('builtins.input', return_value='s')
@@ -68,3 +69,12 @@ def test_cancelar_salvamento_retorna_false(mock_input):
     resultado = confirmar_salvamento_filme()
 
     assert resultado is False
+
+@patch('builtins.input', return_value='The Batman')
+def test_solicitar_nome_filme(mock_input):
+    resultado = solicitar_nome_filme()
+
+    assert resultado == 'The Batman'
+    mock_input.assert_called_once_with(
+        'Digite o nome do filme: '
+    )

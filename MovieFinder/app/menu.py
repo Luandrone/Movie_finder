@@ -67,4 +67,5 @@ def confirmar_salvamento_filme():
 
     return resposta == 's'
 
-
+def solicitar_nome_filme():
+    return input('Digite o nome do filme: ')
