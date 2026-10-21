@@ -1,7 +1,7 @@
 # Casos de uso que conectam entrada, API, persistência e apresentação.
 from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
-from app.menu import selecionar_filme
+from app.menu import selecionar_filme, confirmar_exclusao_filme
 from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
     buscar_generos_do_filme_no_banco, excluir_filme_banco, atualizar_favorito_banco, buscar_filmes_favoritos_banco
@@ -92,14 +92,12 @@ def excluir_filme_salvo():
     mostrar_resultado(filmes)
     filme = selecionar_filme(filmes)
 
-    confirmacao = input(f'Você deseja excluir "{filme.titulo}"? (S/N): ').strip().lower()
-
-    if confirmacao != 's':
+    if not confirmar_exclusao_filme(filme):
         print('A exclusão foi cancelada!')
         return
-    else:
-        excluir_filme_banco(filme)
-        print('Filme excluído com sucesso!')
+
+    excluir_filme_banco(filme)
+    print('Filme excluído com sucesso!')
 
 def gerenciar_favoritos():
     filmes = buscar_filmes_banco()

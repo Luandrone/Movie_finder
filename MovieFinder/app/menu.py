@@ -11,6 +11,7 @@ def mostrar_menu():
     print('5 - Exibir filmes favoritos')
     print('6 - Sair')
     print('=' * 25)
+
     while True:
         try:
 
@@ -25,9 +26,6 @@ def mostrar_menu():
         except ValueError:
             print('Valor incorreto!')
 
-
-
-
 def selecionar_filme(lista_de_filmes):
     # Lê a posição escolhida e devolve o Filme correspondente.
     while True:
@@ -41,3 +39,7 @@ def selecionar_filme(lista_de_filmes):
         except (ValueError, IndexError):
             print('Opção invalida! Digite novamente')
 
+def confirmar_exclusao_filme(filme):
+    resposta = input(f'Você deseja excluir {filme.titulo} ? (S/N): ').strip().lower()
+
+    return resposta == 's'
