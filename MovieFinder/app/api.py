@@ -2,7 +2,6 @@
 from app.config import BASE_URL, MOVIE_SEARCH_ENDPOINT, MOVIE_PROVIDERS_ENDPOINT, headers, MOVIE_DETAILS_ENDPOINT
 import requests
 from app.excecoes import ErroApi
-from app.filme import Filme
 from app.transformador import transformar_filmes, organizar_disponibilidades
 
 

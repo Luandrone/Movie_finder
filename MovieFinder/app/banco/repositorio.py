@@ -3,7 +3,7 @@ from app.banco.comparador import comparar_filmes, comparar_disponibilidades, com
 from app.banco.conexao import obter_conexao
 from app.banco.consultas import buscar_por_tmdb_id, inserir_filme, atualizar_filme, buscar_todos_filmes, \
     buscar_disponibilidades_filme, sincronizar_disponibilidades, buscar_genero_por_tmdb_id, inserir_genero, \
-    inserir_filme_genero, buscar_generos_filme, excluir_generos_filme, excluir_disponibilidade, \
+    inserir_filme_genero, buscar_generos_filme, excluir_generos_filme, \
     excluir_disponibilidades_do_filme, excluir_associacoes_generos_do_filme, excluir_filme_por_id, atualizar_favorito, buscar_filmes_favoritos
 from app.banco.mapper import mapear_filme, mapear_disponibilidade, mapear_genero
 

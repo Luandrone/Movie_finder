@@ -2,7 +2,7 @@ from app.excecoes import ErroApi
 from app.filme import Filme
 from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado, \
     excluir_filme_salvo, gerenciar_favoritos
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 import pytest
 
 @patch('app.serviço.buscar_filme')
