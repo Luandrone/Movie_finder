@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from app.filme import Filme
-from app.menu import confirmar_exclusao_filme, confirmar_alteracao_favorito
+from app.menu import confirmar_exclusao_filme, confirmar_alteracao_favorito, confirmar_salvamento_filme
 
 
 @patch('builtins.input', return_value='s')
@@ -52,3 +52,19 @@ def test_confirmar_remocao_dos_favoritos_retorna_true(
         'Você deseja remover esse filme dos favoritos ? (S/N): '
     )
     assert 'já está adicionado aos favoritos' in capsys.readouterr().out
+
+@patch('builtins.input', return_value='s')
+def test_confirmar_salvamento_retorna_true(mock_input):
+    resultado = confirmar_salvamento_filme()
+
+    assert resultado is True
+    mock_input.assert_called_once_with(
+        'Deseja salvar o filme ? (S/N): '
+    )
+
+
+@patch('builtins.input', return_value='n')
+def test_cancelar_salvamento_retorna_false(mock_input):
+    resultado = confirmar_salvamento_filme()
+
+    assert resultado is False

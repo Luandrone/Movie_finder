@@ -59,3 +59,12 @@ def confirmar_alteracao_favorito(filme):
     resposta = input(pergunta).strip().lower()
 
     return resposta == 's'
+
+def confirmar_salvamento_filme():
+    resposta = input(
+        'Deseja salvar o filme ? (S/N): '
+    ).strip().lower()
+
+    return resposta == 's'
+
+

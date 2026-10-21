@@ -1,15 +1,15 @@
 # Casos de uso que conectam entrada, API, persistência e apresentação.
 from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
-from app.menu import selecionar_filme, confirmar_exclusao_filme, confirmar_alteracao_favorito
+from app.menu import selecionar_filme, confirmar_exclusao_filme, confirmar_alteracao_favorito, \
+    confirmar_salvamento_filme
 from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
     buscar_generos_do_filme_no_banco, excluir_filme_banco, atualizar_favorito_banco, buscar_filmes_favoritos_banco
 
 def _salvar_filme_se_confirmado(filme):
-    resposta = input('Deseja salvar o filme ? (S/N): ').strip().lower()
 
-    if resposta != 's':
+    if not confirmar_salvamento_filme():
         print('Filme não foi salvo.')
         return
 
