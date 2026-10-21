@@ -14,7 +14,8 @@ O projeto utiliza PostgreSQL para persistir os dados e sincronizar as informaç�
 - **Gerenciamento de gêneros:** mantém os gêneros relacionados aos filmes salvos.
 - **Gerenciamento de favoritos:** permite adicionar e remover filmes dos favoritos e consultar a lista de favoritos.
 - **Gerenciamento de filmes salvos:** permite listar e excluir filmes armazenados no banco.
-- **Tratamento de erros:** trata falhas de conexão e respostas HTTP da API.
+- **Tratamento de erros:** trata falhas de conexão, erros HTTP,
+  tempos limite e respostas JSON inválidas da API.
 
 ## 🛠️ Tecnologias utilizadas
 
