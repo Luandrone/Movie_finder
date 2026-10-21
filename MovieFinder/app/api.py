@@ -12,14 +12,15 @@ def fazer_requisicao(url,cabecalho, parametros=None):
         response = requests.get(url, params=parametros, headers=cabecalho, timeout=10)
         response.raise_for_status()
 
+    except requests.exceptions.Timeout as erro:
+        raise ErroApi(erro, 'Problema de tempo limite')
+
     except requests.exceptions.ConnectionError as erro:
         raise ErroApi(erro, 'Problema de conexão')
 
     except requests.exceptions.HTTPError as erro:
         raise ErroApi(erro, 'Problema de Http')
 
-    except requests.exceptions.Timeout as erro:
-        raise ErroApi(erro, 'Problema de tempo limite')
 
     return response
 

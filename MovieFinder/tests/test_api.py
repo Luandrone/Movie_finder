@@ -183,3 +183,15 @@ def test_fazer_requisicao_timeout(mock_request_get):
         )
 
     assert excecao_info.value.tipo == 'Problema de tempo limite'
+
+@patch('app.api.requests.get')
+def test_fazer_requisicao_connect_timeout(mock_request_get):
+    mock_request_get.side_effect = requests.exceptions.ConnectTimeout
+
+    with pytest.raises(ErroApi) as excecao_info:
+        fazer_requisicao(
+            'https://exemplo.com',
+            {'Accept': 'application/json'}
+        )
+
+    assert excecao_info.value.tipo == 'Problema de tempo limite'
