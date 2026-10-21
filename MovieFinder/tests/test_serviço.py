@@ -306,3 +306,22 @@ def test_buscar_filme_erro_timeout(mock_input, mock_buscar_filme, capsys):
         'A API demorou para responder. Tente novamente.'
         in capturado.out
     )
+
+@patch('app.serviço.buscar_filme')
+@patch('builtins.input', return_value='The Batman')
+def test_buscar_filme_json_invalido(
+    mock_input, mock_buscar_filme, capsys
+):
+    mock_buscar_filme.side_effect = ErroApi(
+        'Erro',
+        'Resposta inválida da API'
+    )
+
+    buscar_e_mostrar_filme()
+
+    capturado = capsys.readouterr()
+
+    assert (
+        'A API retornou uma resposta inválida. Tente novamente.'
+        in capturado.out
+    )

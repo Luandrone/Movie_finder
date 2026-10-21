@@ -2,7 +2,7 @@ import pytest
 import requests.exceptions
 from unittest.mock import patch, Mock
 
-from app.api import fazer_requisicao, buscar_detalhes, buscar_disponibilidade
+from app.api import fazer_requisicao, buscar_detalhes, buscar_disponibilidade, buscar_filme
 from app.config import MOVIE_DETAILS_ENDPOINT, BASE_URL, headers
 from app.excecoes import ErroApi
 from app.filme import Filme
@@ -195,3 +195,18 @@ def test_fazer_requisicao_connect_timeout(mock_request_get):
         )
 
     assert excecao_info.value.tipo == 'Problema de tempo limite'
+
+@patch('app.api.fazer_requisicao')
+def test_buscar_filme_json_invalido(mock_fazer_requisicao):
+    resposta = Mock()
+    resposta.json.side_effect = requests.exceptions.JSONDecodeError(
+        'JSON inválido',
+        'conteudo invalido',
+        0
+    )
+    mock_fazer_requisicao.return_value = resposta
+
+    with pytest.raises(ErroApi) as excecao_info:
+        buscar_filme('The Batman')
+
+    assert excecao_info.value.tipo == 'Resposta inválida da API'

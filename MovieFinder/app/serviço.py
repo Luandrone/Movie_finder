@@ -48,6 +48,7 @@ def buscar_e_mostrar_filme():
             'Problema de conexão': 'Não foi possível conectar à API.',
             'Problema de Http': 'A API retornou um erro.',
             'Problema de tempo limite': 'A API demorou para responder. Tente novamente.',
+            'Resposta inválida da API': 'A API retornou uma resposta inválida. Tente novamente.',
         }
 
         mensagem = mensagens_erro.get(

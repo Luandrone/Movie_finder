@@ -24,6 +24,13 @@ def fazer_requisicao(url,cabecalho, parametros=None):
 
     return response
 
+def _ler_json_resposta(response):
+    try:
+        return response.json()
+
+    except requests.exceptions.JSONDecodeError as erro:
+        raise ErroApi(erro, 'Resposta inválida da API') from erro
+
 # irá realizar a busca de um filme
 def buscar_filme(nome_filme):
     # Pesquisa títulos no TMDB e transforma a resposta resumida em objetos Filme.
@@ -55,7 +62,7 @@ def buscar_filme(nome_filme):
 
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_SEARCH_ENDPOINT}', headers, parametros)
 
-    dados = response.json()
+    dados = _ler_json_resposta(response)
 
     lista_filmes = transformar_filmes(dados)
 
@@ -69,7 +76,8 @@ def buscar_detalhes(filme):
 
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}', headers, parametros)
 
-    dados = response.json()
+    dados = _ler_json_resposta(response)
+
     sinopse = (dados['overview'] or '').strip()
     if sinopse:
         filme.sinopse = sinopse
@@ -88,7 +96,7 @@ def buscar_disponibilidade(filme):
 
     response = fazer_requisicao(f'{BASE_URL}{MOVIE_DETAILS_ENDPOINT}{filme.id}{MOVIE_PROVIDERS_ENDPOINT}',headers)
 
-    dados = response.json()
+    dados = _ler_json_resposta(response)
     dados_brasil = dados['results'].get('BR')
 
     if dados_brasil is None:
