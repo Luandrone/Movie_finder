@@ -1,7 +1,7 @@
 # Casos de uso que conectam entrada, API, persistência e apresentação.
 from app.api import buscar_filme, buscar_detalhes, buscar_disponibilidade
 from app.formatador import mostrar_resultado, mostrar_filme
-from app.menu import selecionar_filme, confirmar_exclusao_filme
+from app.menu import selecionar_filme, confirmar_exclusao_filme, confirmar_alteracao_favorito
 from app.excecoes import ErroApi
 from app.banco.repositorio import salvar_filme, buscar_filmes_banco, buscar_disponibilidades_do_filme_no_banco, \
     buscar_generos_do_filme_no_banco, excluir_filme_banco, atualizar_favorito_banco, buscar_filmes_favoritos_banco
@@ -109,15 +109,7 @@ def gerenciar_favoritos():
     mostrar_resultado(filmes)
     filme = selecionar_filme(filmes)
 
-    if filme.favorito:
-        print(f'O filme {filme.titulo} já está adicionado aos favoritos.')
-        confirmacao = input('Você deseja remover esse filme dos favoritos ? (S/N): ').strip().lower()
-
-    else:
-        print(f'O filme {filme.titulo} ainda não está nos favoritos.')
-        confirmacao = input('Você gostaria de adicionar esse filme aos favoritos ? (S/N): ').strip().lower()
-
-    if confirmacao != 's':
+    if not confirmar_alteracao_favorito(filme):
         print('O filme não foi alterado.')
         return
 
@@ -138,3 +130,5 @@ def exibir_filmes_favoritos():
         return
 
     _exibir_filme_selecionado(filmes)
+
+

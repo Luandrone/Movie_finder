@@ -43,3 +43,19 @@ def confirmar_exclusao_filme(filme):
     resposta = input(f'Você deseja excluir {filme.titulo} ? (S/N): ').strip().lower()
 
     return resposta == 's'
+
+def confirmar_alteracao_favorito(filme):
+    if filme.favorito:
+        print(
+            f'O filme {filme.titulo} já está adicionado aos favoritos.'
+        )
+        pergunta = 'Você deseja remover esse filme dos favoritos ? (S/N): '
+    else:
+        print(
+            f'O filme {filme.titulo} ainda não está nos favoritos.'
+        )
+        pergunta = 'Você gostaria de adicionar esse filme aos favoritos ? (S/N): '
+
+    resposta = input(pergunta).strip().lower()
+
+    return resposta == 's'
