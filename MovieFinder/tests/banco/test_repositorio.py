@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.banco.repositorio import buscar_filmes_banco, salvar_filme
+from app.banco.repositorio import buscar_filmes_banco, salvar_filme, excluir_filme_banco
 from app.filme import Filme
 
 @patch('app.banco.repositorio.obter_conexao')
@@ -392,3 +392,22 @@ def test_salvar_filme_faz_rollback_ao_buscar_filme(mock_obter_conexao):
     mock_conn.rollback.assert_called_once()
     mock_conn.close.assert_called_once()
     mock_conn.commit.assert_not_called()
+
+@patch('app.banco.repositorio.obter_conexao')
+def test_excluir_filme_faz_rollback_em_erro(mock_obter_conexao):
+    conn = mock_obter_conexao.return_value
+    filme = Filme('Batman', '2020', 7.0, 212)
+
+    with patch(
+        'app.banco.repositorio.excluir_disponibilidades_do_filme',
+        side_effect=RuntimeError('Erro ao excluir disponibilidade')
+    ):
+        with pytest.raises(
+            RuntimeError,
+            match='Erro ao excluir disponibilidade'
+        ):
+            excluir_filme_banco(filme)
+
+    conn.rollback.assert_called_once_with()
+    conn.close.assert_called_once_with()
+    conn.commit.assert_not_called()
