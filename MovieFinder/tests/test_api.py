@@ -172,3 +172,14 @@ def test_buscar_disponibilidade_sem_provedores(mock_disponibilidade):
 
     assert filme1.disponibilidade == []
 
+@patch('app.api.requests.get')
+def test_fazer_requisicao_timeout(mock_request_get):
+    mock_request_get.side_effect = requests.exceptions.Timeout
+
+    with pytest.raises(ErroApi) as excecao_info:
+        fazer_requisicao(
+            'https://exemplo.com',
+            {'Accept': 'application/json'}
+        )
+
+    assert excecao_info.value.tipo == 'Problema de tempo limite'

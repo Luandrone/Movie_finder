@@ -9,7 +9,7 @@ from app.transformador import transformar_filmes, organizar_disponibilidades
 def fazer_requisicao(url,cabecalho, parametros=None):
     # Centraliza chamadas HTTP e converte falhas de conexão/HTTP em ErroApi.
     try:
-        response = requests.get(url, params=parametros, headers=cabecalho)
+        response = requests.get(url, params=parametros, headers=cabecalho, timeout=10)
         response.raise_for_status()
 
     except requests.exceptions.ConnectionError as erro:
@@ -17,6 +17,10 @@ def fazer_requisicao(url,cabecalho, parametros=None):
 
     except requests.exceptions.HTTPError as erro:
         raise ErroApi(erro, 'Problema de Http')
+
+    except requests.exceptions.Timeout as erro:
+        raise ErroApi(erro, 'Problema de tempo limite')
+
     return response
 
 # irá realizar a busca de um filme

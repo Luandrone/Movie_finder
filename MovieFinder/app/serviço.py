@@ -47,6 +47,7 @@ def buscar_e_mostrar_filme():
         mensagens_erro = {
             'Problema de conexão': 'Não foi possível conectar à API.',
             'Problema de Http': 'A API retornou um erro.',
+            'Problema de tempo limite': 'A API demorou para responder. Tente novamente.',
         }
 
         mensagem = mensagens_erro.get(

@@ -289,3 +289,20 @@ def test_confirmar_remocao_dos_favoritos(capsys):
         'Filme foi removido dos favoritos com sucesso!'
         in capsys.readouterr().out
     )
+
+@patch('app.serviço.buscar_filme')
+@patch('builtins.input', return_value='The Batman')
+def test_buscar_filme_erro_timeout(mock_input, mock_buscar_filme, capsys):
+    mock_buscar_filme.side_effect = ErroApi(
+        'Erro',
+        'Problema de tempo limite'
+    )
+
+    buscar_e_mostrar_filme()
+
+    capturado = capsys.readouterr()
+
+    assert (
+        'A API demorou para responder. Tente novamente.'
+        in capturado.out
+    )
