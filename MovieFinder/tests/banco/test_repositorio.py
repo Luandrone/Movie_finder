@@ -6,8 +6,6 @@ import pytest
 from app.banco.repositorio import buscar_filmes_banco, salvar_filme
 from app.filme import Filme
 
-
-
 @patch('app.banco.repositorio.obter_conexao')
 def test_buscar_filmes_banco(mock_obter_conexao):
     linha_falsa = (
@@ -61,6 +59,7 @@ def test_buscar_filmes_fecha_conexao_em_erro(mock_obter_conexao):
         buscar_filmes_banco()
 
     mock_obter_conexao.return_value.close.assert_called_once_with()
+    mock_obter_conexao.return_value.rollback.assert_called_once_with()
 
 
 @patch('app.banco.repositorio.obter_conexao')

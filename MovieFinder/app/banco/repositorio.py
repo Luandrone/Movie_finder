@@ -18,6 +18,11 @@ def buscar_filmes_banco():
         for linha in resultado:
             filme = mapear_filme(linha)
             lista_filmes.append(filme)
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
         conn.close()
 
