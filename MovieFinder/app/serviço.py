@@ -13,7 +13,7 @@ def _salvar_filme_se_confirmado(filme):
         print('Filme não foi salvo.')
         return
 
-    resultado = salvar_filme(filme)
+    resultado = salvar_filme_no_banco(filme)
 
     if resultado['status'] == 'atualizado':
         print('Filme atualizado no banco com sucesso!')
@@ -84,6 +84,8 @@ def listar_filmes_salvos():
 def listar_filmes_favoritos():
     return buscar_filmes_favoritos_banco()
 
+def salvar_filme_no_banco(filme):
+    return salvar_filme(filme)
 
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.

@@ -2,7 +2,7 @@ from app.excecoes import ErroApi
 from app.filme import Filme
 from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado, \
     excluir_filme_salvo, gerenciar_favoritos, completar_dados_filme_api, pesquisar_filmes_por_nome, \
-    listar_filmes_salvos, listar_filmes_favoritos
+    listar_filmes_salvos, listar_filmes_favoritos, salvar_filme_no_banco
 from unittest.mock import patch
 import pytest
 
@@ -381,3 +381,17 @@ def test_listar_filmes_favoritos():
 
     buscar.assert_called_once_with()
     assert resultado is filmes
+
+def test_salvar_filme_no_banco():
+    filme = Filme("The Batman", 2022)
+    resultado_salvamento = {"status": "novo"}
+
+    with patch(
+        "app.serviço.salvar_filme",
+        return_value=resultado_salvamento
+    ) as salvar:
+
+        resultado = salvar_filme_no_banco(filme)
+
+    salvar.assert_called_once_with(filme)
+    assert resultado is resultado_salvamento
