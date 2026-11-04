@@ -28,12 +28,15 @@ def completar_dados_filme_api(filme):
 
     return filme
 
+def pesquisar_filmes_por_nome(nome_filme):
+    return buscar_filme(nome_filme)
+
 def buscar_e_mostrar_filme():
     # Fluxo de busca: procurar, selecionar, completar, salvar e exibir um filme.
 
     nome_do_filme = solicitar_nome_filme()
     try:
-        lista_de_filmes = buscar_filme(nome_do_filme)
+        lista_de_filmes = pesquisar_filmes_por_nome(nome_do_filme)
 
         if not lista_de_filmes:
             print('Nenhum filme encontrado!')
@@ -135,5 +138,6 @@ def exibir_filmes_favoritos():
         return
 
     _exibir_filme_selecionado(filmes)
+
 
 
