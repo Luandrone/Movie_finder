@@ -81,6 +81,9 @@ def _exibir_filme_selecionado(filmes):
 def listar_filmes_salvos():
     return buscar_filmes_banco()
 
+def listar_filmes_favoritos():
+    return buscar_filmes_favoritos_banco()
+
 
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.
@@ -134,7 +137,7 @@ def gerenciar_favoritos():
 
 
 def exibir_filmes_favoritos():
-    filmes = buscar_filmes_favoritos_banco()
+    filmes = listar_filmes_favoritos()
 
     if not filmes:
         print('Não existe nenhum filme favorito no momento.')
