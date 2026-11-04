@@ -1,7 +1,7 @@
 from app.excecoes import ErroApi
 from app.filme import Filme
 from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado, \
-    excluir_filme_salvo, gerenciar_favoritos
+    excluir_filme_salvo, gerenciar_favoritos, completar_dados_filme_api
 from unittest.mock import patch
 import pytest
 
@@ -325,3 +325,19 @@ def test_buscar_filme_json_invalido(
         'A API retornou uma resposta inválida. Tente novamente.'
         in capturado.out
     )
+
+def test_completar_dados_filme_api():
+    filme = Filme("The Batman", 2022)
+
+    with patch(
+        "app.serviço.buscar_detalhes"
+    ) as buscar_detalhes, patch(
+        "app.serviço.buscar_disponibilidade"
+    ) as buscar_disponibilidade:
+
+        resultado = completar_dados_filme_api(filme)
+
+    buscar_detalhes.assert_called_once_with(filme)
+    buscar_disponibilidade.assert_called_once_with(filme)
+
+    assert resultado is filme

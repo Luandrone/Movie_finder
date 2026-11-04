@@ -22,6 +22,12 @@ def _salvar_filme_se_confirmado(filme):
     elif resultado['status'] == 'novo':
         print('Filme salvo no banco com sucesso!')
 
+def completar_dados_filme_api(filme):
+    buscar_detalhes(filme)
+    buscar_disponibilidade(filme)
+
+    return filme
+
 def buscar_e_mostrar_filme():
     # Fluxo de busca: procurar, selecionar, completar, salvar e exibir um filme.
 
@@ -36,8 +42,7 @@ def buscar_e_mostrar_filme():
         mostrar_resultado(lista_de_filmes)
         filme = selecionar_filme(lista_de_filmes)
 
-        buscar_detalhes(filme)
-        buscar_disponibilidade(filme)
+        completar_dados_filme_api(filme)
         mostrar_filme(filme)
 
         _salvar_filme_se_confirmado(filme)
