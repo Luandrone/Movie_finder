@@ -87,6 +87,9 @@ def listar_filmes_favoritos():
 def salvar_filme_no_banco(filme):
     return salvar_filme(filme)
 
+def excluir_filme_do_banco(filme):
+    return excluir_filme_banco(filme)
+
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.
 
@@ -112,7 +115,7 @@ def excluir_filme_salvo():
         print('A exclusão foi cancelada!')
         return
 
-    excluir_filme_banco(filme)
+    excluir_filme_do_banco(filme)
     print('Filme excluído com sucesso!')
 
 def gerenciar_favoritos():
