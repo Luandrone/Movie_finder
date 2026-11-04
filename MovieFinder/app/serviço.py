@@ -78,11 +78,14 @@ def _exibir_filme_selecionado(filmes):
     filme = _completar_dados_filme_salvo(filme)
     mostrar_filme(filme)
 
+def listar_filmes_salvos():
+    return buscar_filmes_banco()
+
 
 def exibir_filmes_do_banco():
     # Fluxo local: carrega o filme salvo e suas relações para exibição.
 
-    filmes = buscar_filmes_banco()
+    filmes = listar_filmes_salvos()
 
     if not filmes:
         print('Não existe nenhum filme salvo atualmente')
