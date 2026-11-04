@@ -2,7 +2,8 @@ from app.excecoes import ErroApi
 from app.filme import Filme
 from app.serviço import buscar_e_mostrar_filme, _completar_dados_filme_salvo, _salvar_filme_se_confirmado, \
     excluir_filme_salvo, gerenciar_favoritos, completar_dados_filme_api, pesquisar_filmes_por_nome, \
-    listar_filmes_salvos, listar_filmes_favoritos, salvar_filme_no_banco, excluir_filme_do_banco
+    listar_filmes_salvos, listar_filmes_favoritos, salvar_filme_no_banco, excluir_filme_do_banco, \
+    atualizar_favorito_filme
 from unittest.mock import patch
 import pytest
 
@@ -407,3 +408,15 @@ def test_excluir_filme_do_banco():
 
     excluir.assert_called_once_with(filme)
     assert resultado is excluir.return_value
+
+def test_atualizar_favorito_filme():
+    filme = Filme("The Batman", 2022)
+
+    with patch(
+        "app.serviço.atualizar_favorito_banco"
+    ) as atualizar:
+
+        resultado = atualizar_favorito_filme(filme, True)
+
+    atualizar.assert_called_once_with(filme, True)
+    assert resultado is filme
