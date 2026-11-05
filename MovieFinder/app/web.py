@@ -24,7 +24,7 @@ class FilmeResumo(BaseModel):
     nota : float
 
 @app.get("/filmes/buscar")
-def buscar_filmes():
+def buscar_filmes(nome: str):
     return {
-        "mensagem": "Rota de busca funcionando!"
+        "nome_recebido": nome
     }
