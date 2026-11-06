@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from app.web import app
+from app.web import app, FilmeResumo
 
 
 client = TestClient(app)
@@ -51,3 +51,16 @@ def test_buscar_filmes_chama_servico(mock_pesquisar):
     }
 
     mock_pesquisar.assert_called_once_with("The Batman")
+
+def test_modelo_filme_resumo():
+    filme = FilmeResumo(
+        id=414906,
+        titulo="The Batman",
+        ano="2022",
+        nota=7.7
+    )
+
+    assert filme.id == 414906
+    assert filme.titulo == "The Batman"
+    assert filme.ano == "2022"
+    assert filme.nota == 7.7
