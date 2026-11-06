@@ -25,6 +25,7 @@ class FilmeResumo(BaseModel):
 
 @app.get("/filmes/buscar")
 def buscar_filmes(nome: str):
+    filmes = pesquisar_filmes_por_nome(nome)
     return {
-        "nome_recebido": nome
+        "quantidade_encontrada": len(filmes)
     }
