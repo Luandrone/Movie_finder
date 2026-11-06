@@ -1,8 +1,9 @@
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from app.web import app, FilmeResumo
 
+from app.filme import Filme
+from app.web import app, FilmeResumo, converter_filme_resumo
 
 client = TestClient(app)
 
@@ -64,3 +65,13 @@ def test_modelo_filme_resumo():
     assert filme.titulo == "The Batman"
     assert filme.ano == "2022"
     assert filme.nota == 7.7
+
+def test_converter_filme_resumo():
+    filme = Filme("The Batman", 2022, 7.7, 414906)
+
+    resultado = converter_filme_resumo(filme)
+
+    assert resultado.id == 414906
+    assert resultado.titulo == "The Batman"
+    assert resultado.ano == "2022"
+    assert resultado.nota == 7.7

@@ -23,6 +23,14 @@ class FilmeResumo(BaseModel):
     ano : str
     nota : float
 
+def converter_filme_resumo(filme):
+    return FilmeResumo(
+        id = filme.id,
+        titulo = filme.titulo,
+        ano = str(filme.ano),
+        nota = filme.nota
+    )
+
 @app.get("/filmes/buscar")
 def buscar_filmes(nome: str):
     filmes = pesquisar_filmes_por_nome(nome)
