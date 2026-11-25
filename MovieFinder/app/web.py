@@ -33,7 +33,16 @@ def converter_filme_resumo(filme):
 
 @app.get("/filmes/buscar", response_model=list[FilmeResumo])
 def buscar_filmes(nome: str):
-    filmes = pesquisar_filmes_por_nome(nome)
+    try:
+        filmes = pesquisar_filmes_por_nome(nome)
+
+    except ErroApi as erro:
+        if erro.tipo == "Problema de tempo limite":
+            raise HTTPException(
+                status_code=504,
+                detail="O TMDB demorou para responder."
+            ) from erro
+        raise
     filmes_resumidos = []
 
     for filme in filmes:

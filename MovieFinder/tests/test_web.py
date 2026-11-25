@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
+from app.excecoes import ErroApi
 from app.filme import Filme
 from app.web import app, FilmeResumo, converter_filme_resumo
 
@@ -131,3 +132,20 @@ def test_buscar_filmes_retorna_somente_campos_do_modelo():
             "nota": 7.7
         }
     ]
+
+@patch("app.web.pesquisar_filmes_por_nome")
+def test_buscar_filmes_timeout_retorna_504(mock_pesquisar):
+        mock_pesquisar.side_effect = ErroApi(
+            "Tempo limite",
+            "Problema de tempo limite"
+        )
+
+        resposta = client.get(
+            "/filmes/buscar",
+            params={"nome": "The Batman"}
+        )
+
+        assert resposta.status_code == 504
+        assert resposta.json() == {
+            "detail": "O TMDB demorou para responder."
+        }
